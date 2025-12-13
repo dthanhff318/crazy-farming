@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@theme {
+  /* Farm theme pastel colors */
+  --color-farm-brown-50: #fdf8f6;
+  --color-farm-brown-100: #f2e8e5;
+  --color-farm-brown-200: #eaddd7;
+  --color-farm-brown-300: #e0cec7;
+  --color-farm-brown-400: #d2bab0;
+  --color-farm-brown-500: #bfa094;
+  --color-farm-brown-600: #a18072;
+  --color-farm-brown-700: #977669;
+  --color-farm-brown-800: #846358;
+  --color-farm-brown-900: #43302b;
+
+  --color-farm-yellow-50: #fefce8;
+  --color-farm-yellow-100: #fef9c3;
+  --color-farm-yellow-200: #fef08a;
+  --color-farm-yellow-300: #fde047;
+  --color-farm-yellow-400: #facc15;
+  --color-farm-yellow-500: #eab308;
+  --color-farm-yellow-600: #ca8a04;
+  --color-farm-yellow-700: #a16207;
+  --color-farm-yellow-800: #854d0e;
+  --color-farm-yellow-900: #713f12;
+
+  --color-farm-green-50: #f0fdf4;
+  --color-farm-green-100: #dcfce7;
+  --color-farm-green-200: #bbf7d0;
+  --color-farm-green-300: #86efac;
+  --color-farm-green-400: #4ade80;
+  --color-farm-green-500: #22c55e;
+  --color-farm-green-600: #16a34a;
+  --color-farm-green-700: #15803d;
+  --color-farm-green-800: #166534;
+  --color-farm-green-900: #14532d;
+
+  --color-farm-sky-50: #f0f9ff;
+  --color-farm-sky-100: #e0f2fe;
+  --color-farm-sky-200: #bae6fd;
+  --color-farm-sky-300: #7dd3fc;
+  --color-farm-sky-400: #38bdf8;
+  --color-farm-sky-500: #0ea5e9;
+  --color-farm-sky-600: #0284c7;
+  --color-farm-sky-700: #0369a1;
+  --color-farm-sky-800: #075985;
+  --color-farm-sky-900: #0c4a6e;
+
+  --color-farm-coral-50: #fff7ed;
+  --color-farm-coral-100: #ffedd5;
+  --color-farm-coral-200: #fed7aa;
+  --color-farm-coral-300: #fdba74;
+  --color-farm-coral-400: #fb923c;
+  --color-farm-coral-500: #f97316;
+  --color-farm-coral-600: #ea580c;
+  --color-farm-coral-700: #c2410c;
+  --color-farm-coral-800: #9a3412;
+  --color-farm-coral-900: #7c2d12;
+
+  --color-farm-lavender-50: #faf5ff;
+  --color-farm-lavender-100: #f3e8ff;
+  --color-farm-lavender-200: #e9d5ff;
+  --color-farm-lavender-300: #d8b4fe;
+  --color-farm-lavender-400: #c084fc;
+  --color-farm-lavender-500: #a855f7;
+  --color-farm-lavender-600: #9333ea;
+  --color-farm-lavender-700: #7e22ce;
+  --color-farm-lavender-800: #6b21a8;
+  --color-farm-lavender-900: #581c87;
+
+  --color-farm-peach-50: #fff5f5;
+  --color-farm-peach-100: #ffe4e6;
+  --color-farm-peach-200: #fecdd3;
+  --color-farm-peach-300: #fda4af;
+  --color-farm-peach-400: #fb7185;
+  --color-farm-peach-500: #f43f5e;
+  --color-farm-peach-600: #e11d48;
+  --color-farm-peach-700: #be123c;
+  --color-farm-peach-800: #9f1239;
+  --color-farm-peach-900: #881337;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f5f5f5;
+  /* Prevent pull-to-refresh on mobile */
+  overscroll-behavior: none;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 768px) {
+  html {
+    /* Prevent double-tap zoom */
+    touch-action: manipulation;
+  }
+
+  body {
+    /* Prevent overscroll bounce */
+    position: fixed;
+    width: 100%;
+  }
+}
+
+/* Disable text selection on game UI elements */
+.game-container {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
