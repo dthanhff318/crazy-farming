@@ -1,4 +1,5 @@
 import { useUserAnimals } from "../hooks/useUserAnimals";
+import { PixelButton } from "./PixelButton";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
@@ -37,13 +38,15 @@ export const BuildingDetailSection = ({
       <div className="px-4 py-20 pb-24 max-w-[600px] mx-auto sm:px-3 sm:pt-[70px] sm:pb-[90px]">
         {/* Header */}
         <div className="mb-6">
-          <button
+          <PixelButton
             onClick={onBack}
-            className="mb-4 flex items-center gap-2 text-farm-brown-800 font-semibold hover:text-farm-brown-600 transition-colors"
+            variant="secondary"
+            className="mb-4 flex items-center gap-2"
+            style={{ minWidth: "160px", minHeight: "44px" }}
           >
             <span className="text-xl">←</span>
             <span>Back to Farm</span>
-          </button>
+          </PixelButton>
 
           <div className="bg-white rounded-2xl border-4 border-farm-brown-400 p-4 shadow-lg">
             <div className="flex items-center gap-4">

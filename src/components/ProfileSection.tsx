@@ -1,4 +1,6 @@
 import { supabase } from '../lib/supabase';
+import { PixelButton } from './PixelButton';
+import { CurrencyIcon } from '../helpers/currency';
 import type { Database } from '../lib/database.types';
 
 type UserData = Database['public']['Tables']['users']['Row'];
@@ -61,7 +63,9 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
             {/* Coins */}
             <div className="bg-farm-yellow-50 rounded-xl p-4 border-2 border-farm-yellow-200">
               <div className="text-center">
-                <div className="text-2xl mb-1">💰</div>
+                <div className="mb-1 flex justify-center">
+                  <CurrencyIcon size={24} />
+                </div>
                 <p className="text-sm text-farm-brown-600 mb-1">Coins</p>
                 <p className="text-2xl font-bold text-farm-brown-800">{userData.coin}</p>
               </div>
@@ -81,12 +85,14 @@ export const ProfileSection = ({ userData }: ProfileSectionProps) => {
         </div>
 
         {/* Logout Button */}
-        <button
+        <PixelButton
           onClick={handleLogout}
-          className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-4 rounded-xl transition-colors"
+          variant="danger"
+          className="w-full"
+          style={{ minHeight: "56px" }}
         >
           Logout
-        </button>
+        </PixelButton>
       </div>
     </div>
   );

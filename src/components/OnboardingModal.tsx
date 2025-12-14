@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PixelButton } from './PixelButton';
 
 interface OnboardingModalProps {
   onComplete: (farmerName: string) => void;
@@ -62,12 +63,14 @@ export const OnboardingModal = ({ onComplete }: OnboardingModalProps) => {
             )}
           </div>
 
-          <button
+          <PixelButton
             type="submit"
-            className="w-full bg-farm-green-400 hover:bg-farm-green-500 text-white font-bold py-3 px-4 rounded-xl transition-colors"
+            variant="success"
+            className="w-full"
+            style={{ minHeight: "56px" }}
           >
             Start Farming! 🚜
-          </button>
+          </PixelButton>
         </form>
       </div>
     </div>

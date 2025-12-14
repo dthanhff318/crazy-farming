@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+import { PixelButton } from '../components/PixelButton';
 
 export const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -173,13 +174,15 @@ export const Login = () => {
             )}
 
             {/* Submit Button */}
-            <button
+            <PixelButton
               type="submit"
               disabled={loading}
-              className="w-full bg-farm-green-400 hover:bg-farm-green-500 text-white font-bold py-3 px-4 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="success"
+              className="w-full"
+              style={{ minHeight: "56px" }}
             >
               {loading ? (isSignUp ? 'Creating Account...' : 'Logging in...') : (isSignUp ? 'Sign Up' : 'Login')}
-            </button>
+            </PixelButton>
           </form>
 
           {/* Toggle between Login/Signup */}

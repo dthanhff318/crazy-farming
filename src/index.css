@@ -78,6 +78,15 @@
   --color-farm-peach-700: #be123c;
   --color-farm-peach-800: #9f1239;
   --color-farm-peach-900: #881337;
+
+  /* Main background color */
+  --color-card-bg: rgb(228, 166, 114);
+
+  /* Primary text color */
+  --color-text-primary: #3e2731;
+
+  /* Border radius for pixel art elements */
+  --radius-pixel: 14.125px;
 }
 
 html,

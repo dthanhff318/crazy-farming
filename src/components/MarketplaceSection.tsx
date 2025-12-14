@@ -4,6 +4,9 @@ import { useAnimalTypes } from "../hooks/useAnimalTypes";
 import { useUserInventory } from "../hooks/useUserInventory";
 import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
+import { PixelButton } from "./PixelButton";
+import { MarketItemCard } from "./MarketItemCard";
+import { CurrencyIcon } from "../helpers/currency";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
@@ -22,14 +25,29 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
   const [purchasingItem, setPurchasingItem] = useState<string | null>(null);
   const [sellingItem, setSellingItem] = useState<string | null>(null);
 
-  const { seedTypes, loading: seedsLoading, error: seedsError } = useSeedTypes();
-  const { animalTypes, loading: animalsLoading, error: animalsError } = useAnimalTypes();
-  const { inventory, loading: inventoryLoading, error: inventoryError } = useUserInventory(userData?.id);
+  const {
+    seedTypes,
+    loading: seedsLoading,
+    error: seedsError,
+  } = useSeedTypes();
+  const {
+    animalTypes,
+    loading: animalsLoading,
+    error: animalsError,
+  } = useAnimalTypes();
+  const {
+    inventory,
+    loading: inventoryLoading,
+    error: inventoryError,
+  } = useUserInventory(userData?.id);
 
   const userLevel = userData?.level || 1;
 
   // Handle purchase
-  const handlePurchase = async (itemType: "seed" | "animal", itemCode: string) => {
+  const handlePurchase = async (
+    itemType: "seed" | "animal",
+    itemCode: string
+  ) => {
     if (!userData?.id) return;
 
     try {
@@ -50,7 +68,9 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
 
       // Invalidate queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["userData", userData.id] });
-      queryClient.invalidateQueries({ queryKey: ["userInventory", userData.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["userInventory", userData.id],
+      });
 
       alert(`Successfully purchased! Coins left: ${data.coins_left}`);
     } catch (error) {
@@ -83,7 +103,9 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
 
       // Invalidate queries to refetch data
       queryClient.invalidateQueries({ queryKey: ["userData", userData.id] });
-      queryClient.invalidateQueries({ queryKey: ["userInventory", userData.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["userInventory", userData.id],
+      });
 
       alert(`Successfully sold! Earned: ${data.coins_earned} coins`);
     } catch (error) {
@@ -98,7 +120,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
     <div className="w-full h-full overflow-y-auto bg-gradient-to-b from-farm-peach-100 to-farm-coral-100">
       <div className="px-4 py-20 pb-24 max-w-[600px] mx-auto sm:px-3 sm:pt-[70px] sm:pb-[90px]">
         {/* Header */}
-        <h2 className="text-2xl font-bold text-farm-brown-800 mb-6 text-center">
+        <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: "var(--color-text-primary)" }}>
           🏪 Marketplace
         </h2>
 
@@ -140,9 +162,13 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
         {activeCategory === "seeds" && (
           <div>
             {seedsLoading && (
-              <p className="text-farm-brown-600 text-center">Loading seeds...</p>
+              <p className="text-center" style={{ color: "var(--color-text-primary)", opacity: 0.7 }}>
+                Loading seeds...
+              </p>
             )}
-            {seedsError && <p className="text-red-600 text-center">{seedsError}</p>}
+            {seedsError && (
+              <p className="text-red-600 text-center">{seedsError}</p>
+            )}
             {!seedsLoading && !seedsError && (
               <div className="flex flex-col gap-3">
                 {seedTypes.map((seed) => {
@@ -151,56 +177,37 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                   const isPurchasing = purchasingItem === seed.code;
 
                   return (
-                    <div
+                    <MarketItemCard
                       key={seed.id}
-                      className={`bg-white rounded-xl border-3 border-farm-brown-400 p-4 shadow-md ${
-                        isLocked ? "opacity-60" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="text-5xl">{seed.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-bold text-farm-brown-800">
-                            {seed.name}
-                          </h4>
-                          <p className="text-sm text-farm-brown-600 italic">
-                            {seed.description}
-                          </p>
-                          <div className="flex gap-2 mt-2">
-                            <span className="text-xs bg-farm-green-200 text-farm-brown-800 px-2 py-1 rounded">
-                              ⏱️ {seed.growth_time}h
-                            </span>
-                            <span className="text-xs bg-farm-yellow-200 text-farm-brown-800 px-2 py-1 rounded">
-                              💰 {seed.harvest_value} coins
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          {isLocked ? (
-                            <div className="text-xs text-farm-brown-600 bg-gray-200 px-3 py-2 rounded-lg border-2 border-gray-400">
-                              Lv {seed.unlock_level}
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-sm font-bold text-farm-brown-800">
-                                💰 {seed.base_price}
-                              </div>
-                              <button
-                                onClick={() => handlePurchase("seed", seed.code)}
-                                disabled={!canAfford || isPurchasing}
-                                className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
-                                  canAfford && !isPurchasing
-                                    ? "bg-farm-green-400 hover:bg-farm-green-500 text-white border-2 border-farm-green-600"
-                                    : "bg-gray-300 text-gray-600 border-2 border-gray-400 cursor-not-allowed"
-                                }`}
-                              >
-                                {isPurchasing ? "Buying..." : "Buy"}
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                      icon={seed.icon}
+                      name={seed.name}
+                      description={seed.description}
+                      isLocked={isLocked}
+                      lockLevel={seed.unlock_level}
+                      isImageIcon={true}
+                      stats={
+                        <>
+                          <span className="text-xs bg-farm-green-200 px-2 py-1 rounded" style={{ color: "var(--color-text-primary)" }}>
+                            ⏱️ {seed.growth_time}h
+                          </span>
+                          <span className="text-xs bg-farm-yellow-200 px-2 py-1 rounded flex items-center gap-1" style={{ color: "var(--color-text-primary)" }}>
+                            <CurrencyIcon size={12} /> {seed.harvest_value} coins
+                          </span>
+                        </>
+                      }
+                      price={seed.base_price}
+                      action={
+                        <PixelButton
+                          onClick={() => handlePurchase("seed", seed.code)}
+                          disabled={!canAfford || isPurchasing}
+                          variant="success"
+                          className="text-sm"
+                          style={{ minWidth: "80px", minHeight: "40px" }}
+                        >
+                          {isPurchasing ? "Buying..." : "Buy"}
+                        </PixelButton>
+                      }
+                    />
                   );
                 })}
               </div>
@@ -212,9 +219,13 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
         {activeCategory === "animals" && (
           <div>
             {animalsLoading && (
-              <p className="text-farm-brown-600 text-center">Loading animals...</p>
+              <p className="text-center" style={{ color: "var(--color-text-primary)", opacity: 0.7 }}>
+                Loading animals...
+              </p>
             )}
-            {animalsError && <p className="text-red-600 text-center">{animalsError}</p>}
+            {animalsError && (
+              <p className="text-red-600 text-center">{animalsError}</p>
+            )}
             {!animalsLoading && !animalsError && (
               <div className="flex flex-col gap-3">
                 {animalTypes.map((animal) => {
@@ -223,56 +234,37 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                   const isPurchasing = purchasingItem === animal.code;
 
                   return (
-                    <div
+                    <MarketItemCard
                       key={animal.id}
-                      className={`bg-white rounded-xl border-3 border-farm-brown-400 p-4 shadow-md ${
-                        isLocked ? "opacity-60" : ""
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="text-5xl">{animal.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-bold text-farm-brown-800">
-                            {animal.name}
-                          </h4>
-                          <p className="text-sm text-farm-brown-600 italic">
-                            {animal.description}
-                          </p>
-                          <div className="flex gap-2 mt-2">
-                            <span className="text-xs bg-farm-sky-200 text-farm-brown-800 px-2 py-1 rounded">
-                              ⏱️ {animal.production_time}h
-                            </span>
-                            <span className="text-xs bg-farm-yellow-200 text-farm-brown-800 px-2 py-1 rounded">
-                              💰 {animal.production_value} coins
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          {isLocked ? (
-                            <div className="text-xs text-farm-brown-600 bg-gray-200 px-3 py-2 rounded-lg border-2 border-gray-400">
-                              Lv {animal.unlock_level}
-                            </div>
-                          ) : (
-                            <>
-                              <div className="text-sm font-bold text-farm-brown-800">
-                                💰 {animal.base_price}
-                              </div>
-                              <button
-                                onClick={() => handlePurchase("animal", animal.code)}
-                                disabled={!canAfford || isPurchasing}
-                                className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
-                                  canAfford && !isPurchasing
-                                    ? "bg-farm-green-400 hover:bg-farm-green-500 text-white border-2 border-farm-green-600"
-                                    : "bg-gray-300 text-gray-600 border-2 border-gray-400 cursor-not-allowed"
-                                }`}
-                              >
-                                {isPurchasing ? "Buying..." : "Buy"}
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                      icon={animal.icon}
+                      name={animal.name}
+                      description={animal.description}
+                      isLocked={isLocked}
+                      lockLevel={animal.unlock_level}
+                      isImageIcon={true}
+                      stats={
+                        <>
+                          <span className="text-xs bg-farm-sky-200 px-2 py-1 rounded" style={{ color: "var(--color-text-primary)" }}>
+                            ⏱️ {animal.production_time}h
+                          </span>
+                          <span className="text-xs bg-farm-yellow-200 px-2 py-1 rounded flex items-center gap-1" style={{ color: "var(--color-text-primary)" }}>
+                            <CurrencyIcon size={12} /> {animal.production_value} coins
+                          </span>
+                        </>
+                      }
+                      price={animal.base_price}
+                      action={
+                        <PixelButton
+                          onClick={() => handlePurchase("animal", animal.code)}
+                          disabled={!canAfford || isPurchasing}
+                          variant="success"
+                          className="text-sm"
+                          style={{ minWidth: "80px", minHeight: "40px" }}
+                        >
+                          {isPurchasing ? "Buying..." : "Buy"}
+                        </PixelButton>
+                      }
+                    />
                   );
                 })}
               </div>
@@ -284,13 +276,19 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
         {activeCategory === "inventory" && (
           <div>
             {inventoryLoading && (
-              <p className="text-farm-brown-600 text-center">Loading inventory...</p>
+              <p className="text-center" style={{ color: "var(--color-text-primary)", opacity: 0.7 }}>
+                Loading inventory...
+              </p>
             )}
-            {inventoryError && <p className="text-red-600 text-center">{inventoryError}</p>}
+            {inventoryError && (
+              <p className="text-red-600 text-center">{inventoryError}</p>
+            )}
             {!inventoryLoading && !inventoryError && inventory.length === 0 && (
               <div className="bg-white rounded-2xl border-4 border-farm-brown-400 p-8 text-center">
-                <p className="text-farm-brown-600 text-lg">Your inventory is empty</p>
-                <p className="text-farm-brown-500 text-sm mt-2">
+                <p className="text-lg" style={{ color: "var(--color-text-primary)" }}>
+                  Your inventory is empty
+                </p>
+                <p className="text-sm mt-2" style={{ color: "var(--color-text-primary)", opacity: 0.7 }}>
                   Purchase seeds or animals to get started!
                 </p>
               </div>
@@ -298,13 +296,20 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
             {!inventoryLoading && !inventoryError && inventory.length > 0 && (
               <div className="flex flex-col gap-3">
                 {inventory.map((item) => {
-                  const isSelling = sellingItem === `${item.item_type}_${item.item_code}`;
+                  const isSelling =
+                    sellingItem === `${item.item_type}_${item.item_code}`;
 
                   // Get item details based on type
-                  let itemDetails: { name: string; icon: string; sell_price: number } | null = null;
+                  let itemDetails: {
+                    name: string;
+                    icon: string;
+                    sell_price: number;
+                  } | null = null;
 
                   if (item.item_type === "seed") {
-                    const seed = seedTypes.find(s => s.code === item.item_code);
+                    const seed = seedTypes.find(
+                      (s) => s.code === item.item_code
+                    );
                     if (seed) {
                       itemDetails = {
                         name: seed.name,
@@ -313,7 +318,9 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                       };
                     }
                   } else if (item.item_type === "animal") {
-                    const animal = animalTypes.find(a => a.code === item.item_code);
+                    const animal = animalTypes.find(
+                      (a) => a.code === item.item_code
+                    );
                     if (animal) {
                       itemDetails = {
                         name: animal.name,
@@ -326,40 +333,31 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                   if (!itemDetails) return null;
 
                   return (
-                    <div
+                    <MarketItemCard
                       key={item.id}
-                      className="bg-white rounded-xl border-3 border-farm-brown-400 p-4 shadow-md"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="text-5xl">{itemDetails.icon}</div>
-                        <div className="flex-1">
-                          <h4 className="text-lg font-bold text-farm-brown-800">
-                            {itemDetails.name}
-                          </h4>
-                          <div className="flex gap-2 mt-1">
-                            <span className="text-sm bg-farm-green-200 text-farm-brown-800 px-2 py-1 rounded font-bold">
-                              Quantity: {item.quantity}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <div className="text-sm font-bold text-farm-brown-800">
-                            💰 {itemDetails.sell_price} each
-                          </div>
-                          <button
-                            onClick={() => handleSell(item.item_type, item.item_code)}
-                            disabled={isSelling}
-                            className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
-                              !isSelling
-                                ? "bg-farm-coral-400 hover:bg-farm-coral-500 text-white border-2 border-farm-coral-600"
-                                : "bg-gray-300 text-gray-600 border-2 border-gray-400 cursor-not-allowed"
-                            }`}
-                          >
-                            {isSelling ? "Selling..." : "Sell 1"}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                      icon={itemDetails.icon}
+                      name={itemDetails.name}
+                      isImageIcon={true}
+                      stats={
+                        <span className="text-sm bg-farm-green-200 px-2 py-1 rounded font-bold" style={{ color: "var(--color-text-primary)" }}>
+                          Quantity: {item.quantity}
+                        </span>
+                      }
+                      price={itemDetails.sell_price}
+                      action={
+                        <PixelButton
+                          onClick={() =>
+                            handleSell(item.item_type, item.item_code)
+                          }
+                          disabled={isSelling}
+                          variant="danger"
+                          className="text-sm"
+                          style={{ minWidth: "80px", minHeight: "40px" }}
+                        >
+                          {isSelling ? "Selling..." : "Sell 1"}
+                        </PixelButton>
+                      }
+                    />
                   );
                 })}
               </div>

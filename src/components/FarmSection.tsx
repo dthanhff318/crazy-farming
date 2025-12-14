@@ -3,6 +3,8 @@ import { useUserBuildings } from "../hooks/useUserBuildings";
 import { useUserAnimals } from "../hooks/useUserAnimals";
 import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
+import { PixelButton } from "./PixelButton";
+import { CurrencyIcon } from "../helpers/currency";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
@@ -286,33 +288,37 @@ export const FarmSection = ({ userData, onBuildingClick }: FarmSectionProps) => 
                             </div>
                           ) : owned ? (
                             canUpgrade ? (
-                              <button
+                              <PixelButton
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleUpgradeBuilding(building.code);
                                 }}
-                                className="bg-farm-sky-500 hover:bg-farm-sky-600 text-white font-bold px-4 py-2 rounded-lg border-2 border-farm-sky-700 shadow-md transition-colors flex items-center gap-2"
+                                variant="primary"
+                                className="flex items-center gap-2"
                               >
                                 <span>Upgrade</span>
-                                <span className="text-xs bg-white/20 px-2 py-0.5 rounded">
-                                  💰 {nextLevelConfig.upgrade_price}
+                                <span className="text-xs bg-white/20 px-2 py-0.5 rounded flex items-center gap-1">
+                                  <CurrencyIcon size={12} /> {nextLevelConfig.upgrade_price}
                                 </span>
-                              </button>
+                              </PixelButton>
                             ) : (
                               <div className="text-farm-brown-600 text-sm font-semibold bg-farm-brown-100 px-4 py-2 rounded-lg border-2 border-farm-brown-300">
                                 Max Level
                               </div>
                             )
                           ) : (
-                            <button
+                            <PixelButton
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleBuyBuilding(building.code);
                               }}
-                              className="bg-farm-green-400 hover:bg-farm-green-500 text-white font-bold px-4 py-2 rounded-lg border-2 border-farm-green-600 shadow-md transition-colors"
+                              variant="success"
+                              className="flex items-center gap-1"
                             >
-                              <span>Buy 💰 {building.base_price}</span>
-                            </button>
+                              <span>Buy</span>
+                              <CurrencyIcon size={14} />
+                              <span>{building.base_price}</span>
+                            </PixelButton>
                           )}
                         </div>
                       </div>
