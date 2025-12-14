@@ -3,6 +3,7 @@ import { CommonModal } from "./CommonModal";
 import { PixelButton } from "./PixelButton";
 import { CurrencyIcon } from "../helpers/currency";
 import { Tabs, TabList, TabButton, TabPanel } from "./Tabs";
+import { PixelCard } from "./PixelCard";
 
 /**
  * GranarySection - Storage for harvested crops and resources
@@ -29,19 +30,7 @@ export const GranarySection = () => {
           </TabList>
 
           <TabPanel tab="basket">
-            <div
-              className=""
-              style={{
-                borderStyle: "solid",
-                borderWidth: "12px",
-                borderImageSource: "url(/assets/border/light-border.png)",
-                borderImageSlice: "4 4 4 4",
-                borderImageRepeat: "stretch",
-                imageRendering: "pixelated",
-                borderRadius: "var(--radius-pixel)",
-                backgroundColor: "var(--color-card-bg)",
-              }}
-            >
+            <PixelCard className="p-6">
               <p className="m-0 text-farm-brown-700 text-base text-center sm:text-sm">
                 Basket Content
               </p>
@@ -57,30 +46,18 @@ export const GranarySection = () => {
               >
                 Test Modal
               </PixelButton>
-            </div>
+            </PixelCard>
           </TabPanel>
 
           <TabPanel tab="chest">
-            <div
-              className=""
-              style={{
-                borderStyle: "solid",
-                borderWidth: "12px",
-                borderImageSource: "url(/assets/border/light-border.png)",
-                borderImageSlice: "4 4 4 4",
-                borderImageRepeat: "stretch",
-                imageRendering: "pixelated",
-                borderRadius: "var(--radius-pixel)",
-                backgroundColor: "var(--color-card-bg)",
-              }}
-            >
+            <PixelCard className="p-6">
               <p className="m-0 text-farm-brown-700 text-base text-center sm:text-sm">
                 Chest Content
               </p>
               <p className="m-0 text-farm-brown-700 text-base text-center sm:text-sm">
                 Store special items and valuables
               </p>
-            </div>
+            </PixelCard>
           </TabPanel>
         </Tabs>
       </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
+import { PixelCard } from "./PixelCard";
 
 interface CommonModalProps {
   isOpen: boolean;
@@ -59,19 +60,11 @@ export const CommonModal = ({
       />
 
       {/* Modal */}
-      <div
+      <PixelCard
         onClick={(e) => e.stopPropagation()}
         className="absolute w-[95%] p-4 shadow-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         style={{
           maxWidth,
-          borderStyle: "solid",
-          borderWidth: "12px",
-          borderImageSource: "url(/assets/border/light-border.png)",
-          borderImageSlice: "4 4 4 4",
-          borderImageRepeat: "stretch",
-          imageRendering: "pixelated",
-          borderRadius: "var(--radius-pixel)",
-          backgroundColor: "var(--color-card-bg)",
           transform: isAnimating ? "translateY(0)" : "translateY(-20%)",
           opacity: isAnimating ? 1 : 0,
           transition:
@@ -105,7 +98,7 @@ export const CommonModal = ({
 
         {/* Content */}
         <div>{children}</div>
-      </div>
+      </PixelCard>
     </div>
   );
 };

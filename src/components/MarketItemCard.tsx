@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { CurrencyIcon } from "../helpers/currency";
+import { PixelCard } from "./PixelCard";
 
 interface MarketItemCardProps {
   icon: string | null;
@@ -28,19 +29,7 @@ export const MarketItemCard = ({
   isImageIcon = false,
 }: MarketItemCardProps) => {
   return (
-    <div
-      className={`p-4 shadow-md ${isLocked ? "opacity-60" : ""}`}
-      style={{
-        borderStyle: "solid",
-        borderWidth: "12px",
-        borderImageSource: "url(/assets/border/light-border.png)",
-        borderImageSlice: "4 4 4 4",
-        borderImageRepeat: "stretch",
-        imageRendering: "pixelated",
-        borderRadius: "var(--radius-pixel)",
-        backgroundColor: "var(--color-card-bg)",
-      }}
-    >
+    <PixelCard className={`p-4 shadow-md ${isLocked ? "opacity-60" : ""}`}>
       <div className="flex items-center gap-4">
         {/* Icon */}
         <div className="text-5xl">
@@ -84,6 +73,6 @@ export const MarketItemCard = ({
           )}
         </div>
       </div>
-    </div>
+    </PixelCard>
   );
 };

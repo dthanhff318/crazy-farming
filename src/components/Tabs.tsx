@@ -77,6 +77,8 @@ export const TabButton = ({
         flex items-center justify-center gap-2
       `}
       style={{
+        height: "44px",
+        minWidth: "94px",
         ...(isActive
           ? {
               borderImageSource: `url(${getBackgroundImage()})`,
