@@ -7,8 +7,6 @@ import { queryClient } from "../lib/queryClient";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
-type SeedType = Database["public"]["Tables"]["seed_types"]["Row"];
-type AnimalType = Database["public"]["Tables"]["animal_types"]["Row"];
 
 type Category = "seeds" | "animals" | "inventory";
 
@@ -31,7 +29,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
   const userLevel = userData?.level || 1;
 
   // Handle purchase
-  const handlePurchase = async (itemType: "seed" | "animal", itemCode: string, price: number) => {
+  const handlePurchase = async (itemType: "seed" | "animal", itemCode: string) => {
     if (!userData?.id) return;
 
     try {
@@ -188,7 +186,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                                 💰 {seed.base_price}
                               </div>
                               <button
-                                onClick={() => handlePurchase("seed", seed.code, seed.base_price)}
+                                onClick={() => handlePurchase("seed", seed.code)}
                                 disabled={!canAfford || isPurchasing}
                                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
                                   canAfford && !isPurchasing
@@ -260,7 +258,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                                 💰 {animal.base_price}
                               </div>
                               <button
-                                onClick={() => handlePurchase("animal", animal.code, animal.base_price)}
+                                onClick={() => handlePurchase("animal", animal.code)}
                                 disabled={!canAfford || isPurchasing}
                                 className={`px-4 py-2 rounded-lg font-bold text-sm transition-colors ${
                                   canAfford && !isPurchasing

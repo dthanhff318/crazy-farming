@@ -29,12 +29,13 @@ export const useUser = (user: User | null) => {
     mutationFn: async (name: string) => {
       if (!user) throw new Error('No user');
 
-      const { data, error } = await supabase
-        .from('users')
-        .update({ name })
-        .eq('id', user.id)
-        .select()
-        .single();
+      // Use edge function instead of direct DB update
+      const { data, error } = await supabase.functions.invoke('create_new_user', {
+        body: {
+          userId: user.id,
+          name,
+        },
+      });
 
       if (error) throw error;
       return data;
