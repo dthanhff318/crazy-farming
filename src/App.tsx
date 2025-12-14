@@ -1,56 +1,59 @@
-import { useState } from 'react';
-import { Activity } from './components/Activity';
-import { InformationBanner } from './components/InformationBanner';
-import { NavigationBar } from './components/NavigationBar';
-import { FarmSection } from './components/FarmSection';
-import { GranarySection } from './components/GranarySection';
-import { MarketplaceSection } from './components/MarketplaceSection';
-import { ProfileSection } from './components/ProfileSection';
-import type { NavigationOption } from './types';
+import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { supabase } from './lib/supabase';
+import { queryClient } from './lib/queryClient';
+import { Login } from './pages/Login';
+import { Game } from './pages/Game';
+import type { User } from '@supabase/supabase-js';
 
 function App() {
-  const [activeSection, setActiveSection] = useState<NavigationOption>('farm');
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Sample game data - will be replaced with actual game state later
-  const gameData = {
-    coins: 326,
-    day: 10,
-    level: 10,
-  };
+  useEffect(() => {
+    // Check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setLoading(false);
+    });
 
-  const handleNavigate = (section: NavigationOption) => {
-    setActiveSection(section);
-  };
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
+        <div className="text-center">
+          <div className="text-6xl mb-4">🌾</div>
+          <p className="text-xl font-semibold text-farm-brown-800">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-[600px] h-screen mx-auto relative overflow-hidden bg-gray-100 game-container">
-      {/* Information Banner - Always visible */}
-      <InformationBanner
-        coins={gameData.coins}
-        day={gameData.day}
-        level={gameData.level}
-      />
-
-      {/* Game Sections - Controlled by Activity component */}
-      <Activity mode={activeSection === 'farm'}>
-        <FarmSection />
-      </Activity>
-
-      <Activity mode={activeSection === 'granary'}>
-        <GranarySection />
-      </Activity>
-
-      <Activity mode={activeSection === 'marketplace'}>
-        <MarketplaceSection />
-      </Activity>
-
-      <Activity mode={activeSection === 'profile'}>
-        <ProfileSection />
-      </Activity>
-
-      {/* Navigation Bar - Always visible */}
-      <NavigationBar activeSection={activeSection} onNavigate={handleNavigate} />
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/" replace /> : <Login />}
+          />
+          <Route
+            path="/"
+            element={user ? <Game user={user} /> : <Navigate to="/login" replace />}
+          />
+        </Routes>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 }
 
