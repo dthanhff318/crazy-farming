@@ -70,36 +70,47 @@ export const TabButton = ({
   };
 
   return (
-    <button
-      onClick={() => setActiveTab(tab)}
-      className={`
-        relative px-4 py-2 font-bold text-sm transition-all
-        flex items-center justify-center gap-2
+    <div>
+      {isActive ? (
+        <button
+          onClick={() => setActiveTab(tab)}
+          className={`
+        relative px-4 py-2 font-bold text-sm flex items-center justify-center gap-2
       `}
-      style={{
-        height: "44px",
-        minWidth: "94px",
-        ...(isActive
-          ? {
-              borderImageSource: `url(${getBackgroundImage()})`,
-              borderStyle: "solid",
-              borderWidth: "12px",
-              borderImageSlice: "4 4 4 4 fill",
-              borderImageRepeat: "stretch",
-              imageRendering: "pixelated",
-              minWidth: "100px",
-              minHeight: "44px",
-              color: "var(--color-text-primary)",
-              background: "var(--color-card-bg)",
-              borderTopLeftRadius: "var(--radius-pixel)",
-              borderTopRightRadius: "var(--radius-pixel)",
-            }
-          : {}),
-      }}
-    >
-      {icon && <span className="text-base">{icon}</span>}
-      <span>{children}</span>
-    </button>
+          style={{
+            height: "44px",
+            minWidth: "94px",
+            borderImageSource: `url(${getBackgroundImage()})`,
+            borderStyle: "solid",
+            borderWidth: "12px",
+            borderImageSlice: "4 4 4 4 fill",
+            borderImageRepeat: "stretch",
+            imageRendering: "pixelated",
+            color: "var(--color-text-primary)",
+            background: "var(--color-card-bg)",
+            borderTopLeftRadius: "var(--radius-pixel)",
+            borderTopRightRadius: "var(--radius-pixel)",
+          }}
+        >
+          {icon && <span className="text-base">{icon}</span>}
+          <span>{children}</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => setActiveTab(tab)}
+          className={`
+        relative px-4 py-2 font-bold text-sm flex items-center justify-center gap-2
+      `}
+          style={{
+            height: "44px",
+            minWidth: "94px",
+          }}
+        >
+          {icon && <span className="text-base">{icon}</span>}
+          <span>{children}</span>
+        </button>
+      )}
+    </div>
   );
 };
 

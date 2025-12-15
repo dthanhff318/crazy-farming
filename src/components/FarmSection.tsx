@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useBuildingTypes } from "../hooks/useBuildingTypes";
 import { useUserBuildings } from "../hooks/useUserBuildings";
 import { useUserAnimals } from "../hooks/useUserAnimals";
@@ -5,6 +6,7 @@ import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
 import { PixelButton } from "./PixelButton";
 import { CurrencyIcon } from "../helpers/currency";
+import { ShopModal } from "./ShopModal";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
@@ -19,7 +21,12 @@ type BuildingType = Database["public"]["Tables"]["building_types"]["Row"];
 /**
  * FarmSection - Main farm gameplay area
  */
-export const FarmSection = ({ userData, onBuildingClick }: FarmSectionProps) => {
+export const FarmSection = ({
+  userData,
+  onBuildingClick,
+}: FarmSectionProps) => {
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
+
   const {
     buildingTypes,
     loading: buildingsLoading,
@@ -130,9 +137,55 @@ export const FarmSection = ({ userData, onBuildingClick }: FarmSectionProps) => 
     }
   };
 
+  // Handle purchase from shop modal
+  const handleShopPurchase = async (
+    itemType: "seed" | "animal",
+    itemCode: string
+  ) => {
+    if (!userData?.id) return;
+
+    try {
+      const { data, error } = await supabase.functions.invoke("purchase_item", {
+        body: {
+          userId: userData.id,
+          itemType,
+          itemCode,
+          quantity: 1,
+        },
+      });
+
+      if (error) {
+        throw new Error(error.message || "Failed to purchase item");
+      }
+
+      // Invalidate queries to refetch data
+      queryClient.invalidateQueries({ queryKey: ["userData", userData.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["userInventory", userData.id],
+      });
+
+      alert(`Successfully purchased! Coins left: ${data.coins_left}`);
+      setIsShopModalOpen(false);
+    } catch (error) {
+      console.error("Failed to purchase item:", error);
+      alert(error instanceof Error ? error.message : "Failed to purchase item");
+    }
+  };
+  console.log(handleShopPurchase);
+
   return (
     <div className="w-full h-full overflow-y-auto bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
       <div className="px-4 py-20 pb-24 max-w-[600px] mx-auto sm:px-3 sm:pt-[70px] sm:pb-[90px]">
+        {/* Test Shop Button */}
+        <div className="mb-6 flex justify-center">
+          <PixelButton
+            variant="primary"
+            onClick={() => setIsShopModalOpen(true)}
+          >
+            🏪 Open Shop
+          </PixelButton>
+        </div>
+
         <div>
           {(buildingsLoading || userBuildingsLoading || userAnimalsLoading) && (
             <p className="text-farm-brown-600 text-center">
@@ -298,7 +351,8 @@ export const FarmSection = ({ userData, onBuildingClick }: FarmSectionProps) => 
                               >
                                 <span>Upgrade</span>
                                 <span className="text-xs bg-white/20 px-2 py-0.5 rounded flex items-center gap-1">
-                                  <CurrencyIcon size={12} /> {nextLevelConfig.upgrade_price}
+                                  <CurrencyIcon size={12} />{" "}
+                                  {nextLevelConfig.upgrade_price}
                                 </span>
                               </PixelButton>
                             ) : (
@@ -329,6 +383,12 @@ export const FarmSection = ({ userData, onBuildingClick }: FarmSectionProps) => 
             )}
         </div>
       </div>
+
+      {/* Shop Modal */}
+      <ShopModal
+        isOpen={isShopModalOpen}
+        onClose={() => setIsShopModalOpen(false)}
+      />
     </div>
   );
 };

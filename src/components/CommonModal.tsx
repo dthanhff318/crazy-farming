@@ -21,7 +21,6 @@ export const CommonModal = ({
   isOpen,
   onClose,
   children,
-  title,
   maxWidth = "500px",
 }: CommonModalProps) => {
   const [isAnimating, setIsAnimating] = useState(false);
@@ -62,7 +61,8 @@ export const CommonModal = ({
       {/* Modal */}
       <PixelCard
         onClick={(e) => e.stopPropagation()}
-        className="absolute w-[95%] p-4 shadow-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[95%] shadow-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        backgroundColor="var(--color-farm-brown-600)"
         style={{
           maxWidth,
           transform: isAnimating ? "translateY(0)" : "translateY(-20%)",
@@ -74,7 +74,7 @@ export const CommonModal = ({
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-1 right-1 w-7 h-7 flex items-center justify-center transition-transform hover:scale-110 z-10 bg-transparent border-none p-0 cursor-pointer"
+          className="absolute top-[2px] right-[2px] w-7 h-7 flex items-center justify-center transition-transform hover:scale-110 z-10 bg-transparent border-none p-0 cursor-pointer"
           style={{ imageRendering: "pixelated" }}
         >
           <img
@@ -85,16 +85,6 @@ export const CommonModal = ({
             style={{ imageRendering: "pixelated" }}
           />
         </button>
-
-        {/* Title */}
-        {title && (
-          <h2
-            className="text-2xl font-bold mb-4 text-center"
-            style={{ color: "var(--color-text-primary)" }}
-          >
-            {title}
-          </h2>
-        )}
 
         {/* Content */}
         <div>{children}</div>

@@ -5,6 +5,7 @@ interface PixelCardProps extends HTMLAttributes<HTMLDivElement> {
   borderImage?: string;
   className?: string;
   style?: CSSProperties;
+  backgroundColor?: string;
 }
 
 /**
@@ -17,6 +18,7 @@ export const PixelCard = ({
   borderImage = "/assets/border/light-border.png",
   className = "",
   style = {},
+  backgroundColor = "var(--color-card-bg)",
   ...props
 }: PixelCardProps) => {
   return (
@@ -30,7 +32,7 @@ export const PixelCard = ({
         borderImageRepeat: "stretch",
         imageRendering: "pixelated",
         borderRadius: "var(--radius-pixel)",
-        backgroundColor: "var(--color-card-bg)",
+        backgroundColor,
         ...style,
       }}
       {...props}
