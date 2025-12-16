@@ -48,8 +48,9 @@ export const CommonModal = ({
 
   return (
     <div
-      className="fixed inset-0 z-200 flex items-start justify-center px-4"
+      className="fixed inset-0 flex items-start justify-center px-4"
       onClick={onClose}
+      style={{ zIndex: 9999 }}
     >
       {/* Backdrop - fades in/out */}
       <div
@@ -61,14 +62,19 @@ export const CommonModal = ({
       {/* Modal */}
       <PixelCard
         onClick={(e) => e.stopPropagation()}
-        className="absolute w-[95%] shadow-2xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+        className="absolute w-[95%] shadow-2xl"
         backgroundColor="var(--color-farm-brown-600)"
         style={{
           maxWidth,
-          transform: isAnimating ? "translateY(0)" : "translateY(-20%)",
+          top: "50%",
+          left: "50%",
+          transform: isAnimating
+            ? "translate(-50%, -50%)"
+            : "translate(-50%, calc(-50% - 20%))",
           opacity: isAnimating ? 1 : 0,
           transition:
             "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease-out",
+          zIndex: 3000,
         }}
       >
         {/* Close Button */}

@@ -6,7 +6,6 @@ import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
 import { PixelButton } from "./PixelButton";
 import { CurrencyIcon } from "../helpers/currency";
-import { ShopModal } from "./ShopModal";
 import type { Database } from "../lib/database.types";
 
 type UserData = Database["public"]["Tables"]["users"]["Row"];
@@ -14,6 +13,7 @@ type UserData = Database["public"]["Tables"]["users"]["Row"];
 interface FarmSectionProps {
   userData: UserData | null;
   onBuildingClick?: (building: BuildingType, userBuildingId: string) => void;
+  onOpenShop?: () => void;
 }
 
 type BuildingType = Database["public"]["Tables"]["building_types"]["Row"];
@@ -24,8 +24,8 @@ type BuildingType = Database["public"]["Tables"]["building_types"]["Row"];
 export const FarmSection = ({
   userData,
   onBuildingClick,
+  onOpenShop,
 }: FarmSectionProps) => {
-  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
 
   const {
     buildingTypes,
@@ -137,41 +137,6 @@ export const FarmSection = ({
     }
   };
 
-  // Handle purchase from shop modal
-  const handleShopPurchase = async (
-    itemType: "seed" | "animal",
-    itemCode: string
-  ) => {
-    if (!userData?.id) return;
-
-    try {
-      const { data, error } = await supabase.functions.invoke("purchase_item", {
-        body: {
-          userId: userData.id,
-          itemType,
-          itemCode,
-          quantity: 1,
-        },
-      });
-
-      if (error) {
-        throw new Error(error.message || "Failed to purchase item");
-      }
-
-      // Invalidate queries to refetch data
-      queryClient.invalidateQueries({ queryKey: ["userData", userData.id] });
-      queryClient.invalidateQueries({
-        queryKey: ["userInventory", userData.id],
-      });
-
-      alert(`Successfully purchased! Coins left: ${data.coins_left}`);
-      setIsShopModalOpen(false);
-    } catch (error) {
-      console.error("Failed to purchase item:", error);
-      alert(error instanceof Error ? error.message : "Failed to purchase item");
-    }
-  };
-  console.log(handleShopPurchase);
 
   return (
     <div className="w-full h-full overflow-y-auto bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
@@ -180,7 +145,7 @@ export const FarmSection = ({
         <div className="mb-6 flex justify-center">
           <PixelButton
             variant="primary"
-            onClick={() => setIsShopModalOpen(true)}
+            onClick={() => onOpenShop?.()}
           >
             🏪 Open Shop
           </PixelButton>
@@ -383,12 +348,6 @@ export const FarmSection = ({
             )}
         </div>
       </div>
-
-      {/* Shop Modal */}
-      <ShopModal
-        isOpen={isShopModalOpen}
-        onClose={() => setIsShopModalOpen(false)}
-      />
     </div>
   );
 };

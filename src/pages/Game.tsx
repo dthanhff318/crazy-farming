@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Activity } from "../components/Activity";
-import { InformationBanner } from "../components/InformationBanner";
-import { NavigationBar } from "../components/NavigationBar";
+import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
 import { FarmSection } from "../components/FarmSection";
 import { BuildingDetailSection } from "../components/BuildingDetailSection";
 import { GranarySection } from "../components/GranarySection";
 import { MarketplaceSection } from "../components/MarketplaceSection";
 import { ProfileSection } from "../components/ProfileSection";
+import { ShopModal } from "../components/ShopModal";
 import { useUser } from "../hooks/useUser";
 import { supabase } from "../lib/supabase";
 import type { NavigationOption } from "../types";
@@ -26,6 +26,7 @@ export const Game = ({ user }: GameProps) => {
     building: BuildingType;
     userBuildingId: string;
   } | null>(null);
+  const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const { userData, loading, updateUserName } = useUser(user);
 
   // Check if user needs onboarding (user not found in DB or name is null/empty)
@@ -79,52 +80,54 @@ export const Game = ({ user }: GameProps) => {
         <OnboardingModal onComplete={handleOnboardingComplete} />
       )}
 
-      {/* Information Banner - Always visible */}
-      <InformationBanner
+      {/* Game Layout - Header + Navigation + Content */}
+      <GameLayout
         coins={userData?.coin || 0}
-        day={0}
         level={userData?.level || 1}
-      />
-
-      {/* Game Sections Container - Wrapper for slide animation */}
-      <div className="relative w-full h-full">
-        {/* Game Sections - Controlled by Activity component */}
-        <Activity mode={activeSection === "farm" && selectedBuilding === null}>
-          <FarmSection
-            userData={userData}
-            onBuildingClick={(building, userBuildingId) =>
-              setSelectedBuilding({ building, userBuildingId })
-            }
-          />
-        </Activity>
-
-        <Activity mode={activeSection === "granary"}>
-          <GranarySection />
-        </Activity>
-
-        <Activity mode={activeSection === "marketplace"}>
-          <MarketplaceSection userData={userData} />
-        </Activity>
-
-        <Activity mode={activeSection === "profile"}>
-          <ProfileSection userData={userData} />
-        </Activity>
-
-        {/* Building Detail Section */}
-        <Activity mode={selectedBuilding !== null}>
-          <BuildingDetailSection
-            userData={userData}
-            building={selectedBuilding?.building || null}
-            userBuildingId={selectedBuilding?.userBuildingId}
-            onBack={() => setSelectedBuilding(null)}
-          />
-        </Activity>
-      </div>
-
-      {/* Navigation Bar - Always visible */}
-      <NavigationBar
         activeSection={activeSection}
         onNavigate={handleNavigate}
+      >
+        {/* Game Sections Container - Wrapper for slide animation */}
+        <div className="relative w-full h-full">
+          {/* Game Sections - Controlled by Activity component */}
+          <Activity mode={activeSection === "farm" && selectedBuilding === null}>
+            <FarmSection
+              userData={userData}
+              onBuildingClick={(building, userBuildingId) =>
+                setSelectedBuilding({ building, userBuildingId })
+              }
+              onOpenShop={() => setIsShopModalOpen(true)}
+            />
+          </Activity>
+
+          <Activity mode={activeSection === "granary"}>
+            <GranarySection />
+          </Activity>
+
+          <Activity mode={activeSection === "marketplace"}>
+            <MarketplaceSection userData={userData} />
+          </Activity>
+
+          <Activity mode={activeSection === "profile"}>
+            <ProfileSection userData={userData} />
+          </Activity>
+
+          {/* Building Detail Section */}
+          <Activity mode={selectedBuilding !== null}>
+            <BuildingDetailSection
+              userData={userData}
+              building={selectedBuilding?.building || null}
+              userBuildingId={selectedBuilding?.userBuildingId}
+              onBack={() => setSelectedBuilding(null)}
+            />
+          </Activity>
+        </div>
+      </GameLayout>
+
+      {/* Shop Modal - Rendered outside GameLayout to avoid z-index issues */}
+      <ShopModal
+        isOpen={isShopModalOpen}
+        onClose={() => setIsShopModalOpen(false)}
       />
     </div>
   );
