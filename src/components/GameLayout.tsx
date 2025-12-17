@@ -69,19 +69,18 @@ export const GameLayout = ({
           </div>
 
           {/* Right Side - Stats */}
-          <div className="flex flex-col gap-2 pointer-events-auto">
-            <PixelCard
-              className="px-3 py-2 flex items-center gap-1.5"
-              backgroundColor="white"
+          <div className="flex items-center pointer-events-auto">
+            <span
+              className="text-lg font-bold w-fit text-white bg-black/30 pl-3 pr-5 h-fit leading-none translate-x-[10px]"
+              style={{
+                maskImage: "linear-gradient(90deg, #0000, #000 22%)",
+                WebkitMaskImage: "linear-gradient(90deg, #0000, #000 22%)",
+                zIndex: -1,
+              }}
             >
-              <CurrencyIcon size={20} />
-              <span className="text-lg font-bold text-farm-brown-800">
-                {coins}
-              </span>
-            </PixelCard>
-
-            {/* Bottom Row: Additional Stats */}
-            <div className="flex items-center gap-2 justify-end"></div>
+              {coins}
+            </span>
+            <CurrencyIcon size={26} />
           </div>
         </div>
       </div>
