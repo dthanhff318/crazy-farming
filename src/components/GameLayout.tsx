@@ -36,7 +36,6 @@ const RoundButton = ({
 };
 
 interface GameLayoutProps {
-  children: ReactNode;
   coins: number;
   level: number;
   gems?: number;
@@ -48,11 +47,9 @@ interface GameLayoutProps {
  * Combines header (top) and navigation (right side) in one component
  */
 export const GameLayout = ({
-  children,
   coins,
   avatarUrl = "/assets/avatar/default-avatar.png",
 }: GameLayoutProps) => {
-
   return (
     <div className="relative w-full h-full">
       {/* Header - Top */}
@@ -99,9 +96,6 @@ export const GameLayout = ({
           />
         </RoundButton>
       </div>
-
-      {/* Main Content */}
-      {children}
     </div>
   );
 };

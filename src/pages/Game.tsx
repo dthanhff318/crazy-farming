@@ -1,31 +1,17 @@
 import { useState } from "react";
-import { Activity } from "../components/Activity";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
-import { FarmSection } from "../components/FarmSection";
-import { BuildingDetailSection } from "../components/BuildingDetailSection";
-import { GranarySection } from "../components/GranarySection";
-import { MarketplaceSection } from "../components/MarketplaceSection";
-import { ProfileSection } from "../components/ProfileSection";
 import { ShopModal } from "../components/ShopModal";
 import { useUser } from "../hooks/useUser";
 import { supabase } from "../lib/supabase";
-import type { NavigationOption } from "../types";
 import type { User } from "@supabase/supabase-js";
-import type { Database } from "../lib/database.types";
-
-type BuildingType = Database["public"]["Tables"]["building_types"]["Row"];
 
 interface GameProps {
   user: User;
 }
 
 export const Game = ({ user }: GameProps) => {
-  const [activeSection, setActiveSection] = useState<NavigationOption>("farm");
-  const [selectedBuilding, setSelectedBuilding] = useState<{
-    building: BuildingType;
-    userBuildingId: string;
-  } | null>(null);
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
   const { userData, loading, updateUserName } = useUser(user);
 
@@ -55,11 +41,6 @@ export const Game = ({ user }: GameProps) => {
     }
   };
 
-  const handleNavigate = (section: NavigationOption) => {
-    setActiveSection(section);
-  };
-  console.log(handleNavigate);
-
   // Show loading while fetching user data
   if (loading) {
     return (
@@ -75,52 +56,51 @@ export const Game = ({ user }: GameProps) => {
   }
 
   return (
-    <div className="w-full max-w-[600px] h-screen mx-auto relative overflow-hidden bg-gray-100 game-container">
-      {/* Onboarding Modal */}
-      {needsOnboarding && (
-        <OnboardingModal onComplete={handleOnboardingComplete} />
-      )}
-
+    <div className="w-full h-screen mx-auto relative overflow-hidden bg-gray-100 game-container">
       {/* Game Layout - Header + Navigation + Content */}
-      <GameLayout coins={userData?.coin || 0} level={userData?.level || 1}>
-        {/* Game Sections Container - Wrapper for slide animation */}
-        <div className="relative w-full h-full">
-          {/* Game Sections - Controlled by Activity component */}
-          <Activity
-            mode={activeSection === "farm" && selectedBuilding === null}
-          >
-            <FarmSection
-              userData={userData}
-              onBuildingClick={(building, userBuildingId) =>
-                setSelectedBuilding({ building, userBuildingId })
-              }
-              onOpenShop={() => setIsShopModalOpen(true)}
+      <TransformWrapper
+        initialScale={2.2}
+        minScale={1}
+        maxScale={3}
+        centerOnInit={true}
+        wheel={{ step: 0.4 }}
+        pinch={{ step: 30 }}
+        centerZoomedOut={true}
+      >
+        {() => (
+          <>
+            {/* Farm Land - Zoomable and Pannable */}
+            <TransformComponent
+              wrapperClass="!w-full !h-full"
+              contentClass="flex items-center justify-center"
+              contentStyle={{
+                backgroundImage: "url(/assets/objects/sea.png)",
+                backgroundSize: "48px 48px",
+                backgroundRepeat: "repeat",
+                imageRendering: "pixelated",
+                width: "100%",
+                height: "100%",
+              }}
+            >
+              <div className="flex justify-center items-center p-8" style={{}}>
+                <img
+                  src="/assets/objects/main-land.png"
+                  alt="Farm Land"
+                  className="pixelated"
+                  style={{ imageRendering: "pixelated", maxWidth: "800px" }}
+                />
+              </div>
+            </TransformComponent>
+            <GameLayout
+              coins={userData?.coin || 0}
+              level={userData?.level || 1}
             />
-          </Activity>
-
-          <Activity mode={activeSection === "granary"}>
-            <GranarySection />
-          </Activity>
-
-          <Activity mode={activeSection === "marketplace"}>
-            <MarketplaceSection userData={userData} />
-          </Activity>
-
-          <Activity mode={activeSection === "profile"}>
-            <ProfileSection userData={userData} />
-          </Activity>
-
-          {/* Building Detail Section */}
-          <Activity mode={selectedBuilding !== null}>
-            <BuildingDetailSection
-              userData={userData}
-              building={selectedBuilding?.building || null}
-              userBuildingId={selectedBuilding?.userBuildingId}
-              onBack={() => setSelectedBuilding(null)}
-            />
-          </Activity>
-        </div>
-      </GameLayout>
+            {needsOnboarding && (
+              <OnboardingModal onComplete={handleOnboardingComplete} />
+            )}
+          </>
+        )}
+      </TransformWrapper>
 
       {/* Shop Modal - Rendered outside GameLayout to avoid z-index issues */}
       <ShopModal
