@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-import type { NavigationOption } from "../types";
 import { CurrencyIcon } from "../helpers/currency";
 import { PixelCard } from "./PixelCard";
 
@@ -7,7 +6,6 @@ interface RoundButtonProps {
   children: ReactNode;
   onClick?: () => void;
   className?: string;
-  isActive?: boolean;
 }
 
 /**
@@ -17,12 +15,11 @@ const RoundButton = ({
   children,
   onClick,
   className = "",
-  isActive = false,
 }: RoundButtonProps) => {
   return (
     <button
       onClick={onClick}
-      className={`w-16 h-16 flex items-center justify-center cursor-pointer transition-transform duration-200 ${className}`}
+      className={`w-15 h-15 flex items-center justify-center cursor-pointer transition-transform duration-200 ${className}`}
       style={{
         backgroundImage: "url(/assets/buttons/round-button.png)",
         backgroundSize: "100% 100%",
@@ -31,17 +28,6 @@ const RoundButton = ({
         imageRendering: "pixelated",
         border: "none",
         padding: 0,
-        transform: isActive ? "scale(1.1)" : "scale(1)",
-      }}
-      onMouseEnter={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.transform = "scale(1.05)";
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!isActive) {
-          e.currentTarget.style.transform = "scale(1)";
-        }
       }}
     >
       {children}
@@ -55,8 +41,6 @@ interface GameLayoutProps {
   level: number;
   gems?: number;
   avatarUrl?: string;
-  activeSection: NavigationOption;
-  onNavigate: (section: NavigationOption) => void;
 }
 
 /**
@@ -66,18 +50,8 @@ interface GameLayoutProps {
 export const GameLayout = ({
   children,
   coins,
-  level,
-  gems = 0,
   avatarUrl = "/assets/avatar/default-avatar.png",
-  activeSection,
-  onNavigate,
 }: GameLayoutProps) => {
-  const navItems = [
-    { id: "farm" as NavigationOption, icon: "⏰", label: "Farm" },
-    { id: "granary" as NavigationOption, icon: "💼", label: "Granary" },
-    { id: "marketplace" as NavigationOption, icon: "📦", label: "Marketplace" },
-    { id: "profile" as NavigationOption, icon: "🌽", label: "Profile" },
-  ];
 
   return (
     <div className="relative w-full h-full">
@@ -95,10 +69,6 @@ export const GameLayout = ({
                 style={{ imageRendering: "pixelated" }}
               />
             </div>
-
-            <RoundButton>
-              <CurrencyIcon size={24} />
-            </RoundButton>
           </div>
 
           {/* Right Side - Stats */}
@@ -120,17 +90,15 @@ export const GameLayout = ({
       </div>
 
       {/* Navigation Bar - Right Side */}
-      <nav className="fixed right-3 bottom-20 z-[90] flex flex-col gap-3 pointer-events-auto">
-        {navItems.map((item) => (
-          <RoundButton
-            key={item.id}
-            isActive={activeSection === item.id}
-            onClick={() => onNavigate(item.id)}
-          >
-            <span className="text-2xl">{item.icon}</span>
-          </RoundButton>
-        ))}
-      </nav>
+      <div className="fixed right-3 bottom-3 z-[90] flex flex-col gap-3 pointer-events-auto">
+        <RoundButton onClick={() => {}}>
+          <img
+            src="/assets/buttons/setting-icon.png"
+            alt="Settings"
+            className="w-9 h-9"
+          />
+        </RoundButton>
+      </div>
 
       {/* Main Content */}
       {children}

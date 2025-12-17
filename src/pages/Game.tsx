@@ -58,6 +58,7 @@ export const Game = ({ user }: GameProps) => {
   const handleNavigate = (section: NavigationOption) => {
     setActiveSection(section);
   };
+  console.log(handleNavigate);
 
   // Show loading while fetching user data
   if (loading) {
@@ -81,16 +82,13 @@ export const Game = ({ user }: GameProps) => {
       )}
 
       {/* Game Layout - Header + Navigation + Content */}
-      <GameLayout
-        coins={userData?.coin || 0}
-        level={userData?.level || 1}
-        activeSection={activeSection}
-        onNavigate={handleNavigate}
-      >
+      <GameLayout coins={userData?.coin || 0} level={userData?.level || 1}>
         {/* Game Sections Container - Wrapper for slide animation */}
         <div className="relative w-full h-full">
           {/* Game Sections - Controlled by Activity component */}
-          <Activity mode={activeSection === "farm" && selectedBuilding === null}>
+          <Activity
+            mode={activeSection === "farm" && selectedBuilding === null}
+          >
             <FarmSection
               userData={userData}
               onBuildingClick={(building, userBuildingId) =>
