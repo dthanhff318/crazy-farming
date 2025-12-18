@@ -30,10 +30,10 @@ export const LoadingScreen = () => {
       }}
     >
       {/* Main Content */}
-      <div className="text-center justify-center z-10 w-[90%] max-w-[500px]">
+      <div className="flex flex-col justify-center z-10 w-[90%] max-w-[500px]">
         {/* Title */}
         <div
-          className="flex flex-col items-start gap-3"
+          className="flex flex-col items-start gap-1 translate-y-[-20%]"
           style={{
             fontFamily: "Pixel",
           }}
@@ -91,7 +91,7 @@ export const LoadingScreen = () => {
         />
 
         {/* Loading Bar */}
-        <PixelCard className="mt-4 mx-auto w-[90%] max-w-[500px] h-[46px]">
+        <PixelCard className="mt-2 mx-auto w-[90%] max-w-[500px] h-[46px]">
           <div
             className="relative h-full pixelated"
             style={{
