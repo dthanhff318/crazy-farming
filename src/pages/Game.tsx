@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { ZoomPanContainer } from "../components/ZoomPanContainer";
 import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
 import { ShopModal } from "../components/ShopModal";
@@ -58,49 +58,40 @@ export const Game = ({ user }: GameProps) => {
   return (
     <div className="w-full h-screen mx-auto relative overflow-hidden bg-gray-100 game-container">
       {/* Game Layout - Header + Navigation + Content */}
-      <TransformWrapper
+      <ZoomPanContainer
         initialScale={2.2}
         minScale={1}
         maxScale={3}
-        centerOnInit={true}
-        wheel={{ step: 0.4 }}
-        pinch={{ step: 30 }}
-        centerZoomedOut={true}
+        wheelStep={0.1}
       >
-        {() => (
-          <>
-            {/* Farm Land - Zoomable and Pannable */}
-            <TransformComponent
-              wrapperClass="!w-full !h-full"
-              contentClass="flex items-center justify-center"
-              contentStyle={{
-                backgroundImage: "url(/assets/objects/sea.png)",
-                backgroundSize: "48px 48px",
-                backgroundRepeat: "repeat",
-                imageRendering: "pixelated",
-                width: "100%",
-                height: "100%",
-              }}
-            >
-              <div className="flex justify-center items-center p-8" style={{}}>
-                <img
-                  src="/assets/objects/main-land.png"
-                  alt="Farm Land"
-                  className="pixelated"
-                  style={{ imageRendering: "pixelated", maxWidth: "800px" }}
-                />
-              </div>
-            </TransformComponent>
-            <GameLayout
-              coins={userData?.coin || 0}
-              level={userData?.level || 1}
+        <div
+          className="w-full h-full flex items-center justify-center"
+          style={{
+            backgroundImage: "url(/assets/objects/sea.png)",
+            backgroundSize: "48px 48px",
+            backgroundRepeat: "repeat",
+            imageRendering: "pixelated",
+            minWidth: "100vw",
+            minHeight: "100vh",
+          }}
+        >
+          <div className="flex justify-center items-center p-8">
+            <img
+              src="/assets/objects/main-land.png"
+              alt="Farm Land"
+              className="pixelated"
+              style={{ imageRendering: "pixelated", maxWidth: "800px" }}
             />
-            {needsOnboarding && (
-              <OnboardingModal onComplete={handleOnboardingComplete} />
-            )}
-          </>
-        )}
-      </TransformWrapper>
+          </div>
+        </div>
+      </ZoomPanContainer>
+
+      {/* UI Overlays - Positioned absolutely above the zoom/pan container */}
+      <GameLayout coins={userData?.coin || 0} level={userData?.level || 1} />
+
+      {needsOnboarding && (
+        <OnboardingModal onComplete={handleOnboardingComplete} />
+      )}
 
       {/* Shop Modal - Rendered outside GameLayout to avoid z-index issues */}
       <ShopModal
