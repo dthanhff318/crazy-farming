@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PixelCard } from "./PixelCard";
 
 export const LoadingScreen = () => {
   const [progress, setProgress] = useState(0);
@@ -29,7 +30,7 @@ export const LoadingScreen = () => {
       }}
     >
       {/* Main Content */}
-      <div className="text-center z-10">
+      <div className="text-center justify-center z-10 w-[90%] max-w-[500px]">
         {/* Title */}
         <div
           className="flex flex-col items-start gap-3"
@@ -37,11 +38,15 @@ export const LoadingScreen = () => {
             fontFamily: "Pixel",
           }}
         >
-          <div className="flex items-center">
-            <h1
-              className="text-6xl font-bold pixelated text-left text-farm-peach-500 ml-3"
-              style={{
-                textShadow: `
+          <img
+            src="/assets/objects/boat.gif"
+            alt="Crazy"
+            className="w-[206px] h-[90px] pixelated"
+          />
+          <h1
+            className="text-6xl font-bold pixelated text-left text-farm-peach-500 ml-5"
+            style={{
+              textShadow: `
                   -2px -2px 0 #fff,
                   2px -2px 0 #fff,
                   -2px 2px 0 #fff,
@@ -51,18 +56,12 @@ export const LoadingScreen = () => {
                   0 -3px 0 #fff,
                   0 3px 0 #fff
                 `,
-              }}
-            >
-              CRAZY
-            </h1>
-            <img
-              src="/assets/objects/boat.gif"
-              alt="Crazy"
-              className="w-[206px] h-[90px] pixelated"
-            />
-          </div>
+            }}
+          >
+            CRAZY
+          </h1>
           <h1
-            className="text-7xl font-bold pixelated text-left text-farm-green-500 ml-3"
+            className="text-7xl font-bold pixelated text-left text-farm-green-500 ml-5"
             style={{
               textShadow: `
                 -2px -2px 0 #fff,
@@ -92,13 +91,10 @@ export const LoadingScreen = () => {
         />
 
         {/* Loading Bar */}
-        <div className="mt-8 mx-auto" style={{ width: "400px" }}>
+        <PixelCard className="mt-4 mx-auto w-[90%] max-w-[500px] h-[46px]">
           <div
-            className="relative h-12 pixelated"
+            className="relative h-full pixelated"
             style={{
-              backgroundColor: "#D4A574",
-              border: "4px solid #8B5E3C",
-              borderRadius: "8px",
               overflow: "hidden",
             }}
           >
@@ -108,7 +104,6 @@ export const LoadingScreen = () => {
               style={{
                 width: `${progress}%`,
                 backgroundColor: "#F4D4A0",
-                boxShadow: "inset 0 2px 4px rgba(255, 255, 255, 0.3)",
               }}
             />
 
@@ -125,7 +120,7 @@ export const LoadingScreen = () => {
               </span>
             </div>
           </div>
-        </div>
+        </PixelCard>
       </div>
     </div>
   );
