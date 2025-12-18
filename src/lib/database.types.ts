@@ -264,6 +264,73 @@ export interface Database {
           created_at?: string | null
         }
       }
+      farm_plots: {
+        Row: {
+          id: string
+          user_id: string
+          plot_number: number
+          position_x: number | null
+          position_y: number | null
+          is_unlocked: boolean
+          unlocked_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plot_number: number
+          position_x?: number | null
+          position_y?: number | null
+          is_unlocked?: boolean
+          unlocked_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plot_number?: number
+          position_x?: number | null
+          position_y?: number | null
+          is_unlocked?: boolean
+          unlocked_at?: string | null
+          created_at?: string | null
+        }
+      }
+      user_crops: {
+        Row: {
+          id: string
+          user_id: string
+          plot_id: string
+          seed_code: string
+          planted_at: string
+          ready_at: string
+          status: string
+          withered_at: string | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          plot_id: string
+          seed_code: string
+          planted_at?: string
+          ready_at: string
+          status?: string
+          withered_at?: string | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          plot_id?: string
+          seed_code?: string
+          planted_at?: string
+          ready_at?: string
+          status?: string
+          withered_at?: string | null
+          created_at?: string | null
+        }
+      }
     }
     Views: {
       [_ in never]: never
