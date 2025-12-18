@@ -5,7 +5,6 @@ interface ZoomPanContainerProps {
   minScale?: number;
   maxScale?: number;
   initialScale?: number;
-  wheelStep?: number;
 }
 
 interface Position {
@@ -21,7 +20,7 @@ interface TouchPoints {
  * Custom Zoom/Pan container optimized for mobile devices
  * Supports:
  * - Pinch to zoom on mobile
- * - Mouse wheel zoom on desktop
+ * - Mouse wheel/touchpad to pan on desktop
  * - Drag to pan (touch and mouse)
  * - Smooth animations
  */
@@ -30,7 +29,6 @@ export const ZoomPanContainer = ({
   minScale = 1,
   maxScale = 3,
   initialScale = 2.2,
-  wheelStep = 0.1,
 }: ZoomPanContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -86,30 +84,17 @@ export const ZoomPanContainer = ({
     };
   };
 
-  // Handle wheel zoom (desktop)
+  // Handle wheel pan (desktop) - scroll to pan instead of zoom
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
 
-    const delta = e.deltaY > 0 ? -wheelStep : wheelStep;
-    const newScale = Math.max(minScale, Math.min(maxScale, scale + delta));
+    // Pan on scroll (move content when scrolling)
+    const panSpeed = 1; // Adjust this for faster/slower panning
+    const newX = position.x - e.deltaX * panSpeed;
+    const newY = position.y - e.deltaY * panSpeed;
 
-    if (newScale !== scale) {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const rect = container.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      // Zoom towards mouse position
-      const scaleRatio = newScale / scale;
-      const newX = mouseX - (mouseX - position.x) * scaleRatio;
-      const newY = mouseY - (mouseY - position.y) * scaleRatio;
-
-      setScale(newScale);
-      setPosition({ x: newX, y: newY });
-      setLastPosition({ x: newX, y: newY });
-    }
+    setPosition({ x: newX, y: newY });
+    setLastPosition({ x: newX, y: newY });
   };
 
   // Mouse events for desktop dragging

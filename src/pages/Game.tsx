@@ -62,7 +62,6 @@ export const Game = ({ user }: GameProps) => {
         initialScale={2.2}
         minScale={1}
         maxScale={3}
-        wheelStep={0.1}
       >
         <div
           className="w-full h-full flex items-center justify-center"
