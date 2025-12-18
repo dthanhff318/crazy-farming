@@ -17,10 +17,11 @@ interface TouchPoints {
 }
 
 /**
- * Custom Zoom/Pan container optimized for mobile devices
+ * Custom Zoom/Pan container optimized for mobile and desktop
  * Supports:
- * - Pinch to zoom on mobile
- * - Mouse wheel/touchpad to pan on desktop
+ * - Pinch to zoom on mobile touchscreen
+ * - Pinch to zoom on MacBook trackpad (2 fingers in/out)
+ * - Mouse wheel/trackpad scroll to pan
  * - Drag to pan (touch and mouse)
  * - Smooth animations
  */
@@ -84,17 +85,45 @@ export const ZoomPanContainer = ({
     };
   };
 
-  // Handle wheel pan (desktop) - scroll to pan instead of zoom
+  // Handle wheel events (desktop/trackpad)
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
 
-    // Pan on scroll (move content when scrolling)
-    const panSpeed = 1; // Adjust this for faster/slower panning
-    const newX = position.x - e.deltaX * panSpeed;
-    const newY = position.y - e.deltaY * panSpeed;
+    // Check if this is a pinch zoom gesture on trackpad (ctrlKey indicates pinch on most browsers)
+    const isPinchZoom = e.ctrlKey;
 
-    setPosition({ x: newX, y: newY });
-    setLastPosition({ x: newX, y: newY });
+    if (isPinchZoom) {
+      // Trackpad pinch zoom
+      const zoomSpeed = 0.01; // Adjust for sensitivity
+      const delta = -e.deltaY * zoomSpeed; // Negative because deltaY is opposite
+      const newScale = Math.max(minScale, Math.min(maxScale, scale + delta));
+
+      if (newScale !== scale) {
+        const container = containerRef.current;
+        if (!container) return;
+
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        // Zoom towards cursor position
+        const scaleRatio = newScale / scale;
+        const newX = mouseX - (mouseX - position.x) * scaleRatio;
+        const newY = mouseY - (mouseY - position.y) * scaleRatio;
+
+        setScale(newScale);
+        setPosition({ x: newX, y: newY });
+        setLastPosition({ x: newX, y: newY });
+      }
+    } else {
+      // Regular scroll - pan the content
+      const panSpeed = 1; // Adjust this for faster/slower panning
+      const newX = position.x - e.deltaX * panSpeed;
+      const newY = position.y - e.deltaY * panSpeed;
+
+      setPosition({ x: newX, y: newY });
+      setLastPosition({ x: newX, y: newY });
+    }
   };
 
   // Mouse events for desktop dragging
