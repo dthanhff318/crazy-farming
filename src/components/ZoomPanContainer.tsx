@@ -51,22 +51,31 @@ export const ZoomPanContainer = ({
   const lastScaleRef = useRef(initialScale);
   const lastDistanceRef = useRef(0);
 
-  // Center content on mount
+  // Center content on mount - focus on center of the map
   useEffect(() => {
-    if (containerRef.current && contentRef.current) {
+    if (containerRef.current) {
       const container = containerRef.current;
-      const content = contentRef.current;
-
       const containerRect = container.getBoundingClientRect();
-      const contentRect = content.getBoundingClientRect();
 
-      const centerX = (containerRect.width - contentRect.width * initialScale) / 2;
-      const centerY = (containerRect.height - contentRect.height * initialScale) / 2;
+      // Calculate the center point of the content (map)
+      const contentCenterX = contentWidth / 2;
+      const contentCenterY = contentHeight / 2;
 
-      setPosition({ x: centerX, y: centerY });
-      setLastPosition({ x: centerX, y: centerY });
+      // Calculate position to center the map's center point in the viewport
+      // Position = (viewport center) - (content center * scale)
+      const centerX = containerRect.width / 2 - contentCenterX * initialScale;
+      const centerY = containerRect.height / 2 - contentCenterY * initialScale;
+
+      // Apply boundary constraints
+      const constrainedPos = constrainPosition(
+        { x: centerX, y: centerY },
+        initialScale
+      );
+
+      setPosition(constrainedPos);
+      setLastPosition(constrainedPos);
     }
-  }, [initialScale]);
+  }, [initialScale, contentWidth, contentHeight]);
 
   // Calculate distance between two touch points
   const getDistance = (touches: TouchPoints): number => {
