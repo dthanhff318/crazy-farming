@@ -5,6 +5,8 @@ interface ZoomPanContainerProps {
   minScale?: number;
   maxScale?: number;
   initialScale?: number;
+  contentWidth?: number;
+  contentHeight?: number;
 }
 
 interface Position {
@@ -30,6 +32,8 @@ export const ZoomPanContainer = ({
   minScale = 1,
   maxScale = 3,
   initialScale = 2.2,
+  contentWidth = 4116,
+  contentHeight = 2940,
 }: ZoomPanContainerProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -85,6 +89,39 @@ export const ZoomPanContainer = ({
     };
   };
 
+  // Constrain position to content boundaries
+  const constrainPosition = (pos: Position, currentScale: number): Position => {
+    if (!containerRef.current) return pos;
+
+    const container = containerRef.current;
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate scaled content dimensions
+    const scaledWidth = contentWidth * currentScale;
+    const scaledHeight = contentHeight * currentScale;
+
+    // Calculate boundaries
+    // Max position is 0 (content aligned to top-left)
+    // Min position ensures content doesn't go beyond bottom-right
+    const maxX = 0;
+    const maxY = 0;
+    const minX = containerRect.width - scaledWidth;
+    const minY = containerRect.height - scaledHeight;
+
+    // If content is smaller than container, center it
+    const constrainedX =
+      scaledWidth < containerRect.width
+        ? (containerRect.width - scaledWidth) / 2
+        : Math.max(minX, Math.min(maxX, pos.x));
+
+    const constrainedY =
+      scaledHeight < containerRect.height
+        ? (containerRect.height - scaledHeight) / 2
+        : Math.max(minY, Math.min(maxY, pos.y));
+
+    return { x: constrainedX, y: constrainedY };
+  };
+
   // Handle wheel events (desktop/trackpad)
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
@@ -111,9 +148,12 @@ export const ZoomPanContainer = ({
         const newX = mouseX - (mouseX - position.x) * scaleRatio;
         const newY = mouseY - (mouseY - position.y) * scaleRatio;
 
+        // Constrain to boundaries
+        const constrainedPos = constrainPosition({ x: newX, y: newY }, newScale);
+
         setScale(newScale);
-        setPosition({ x: newX, y: newY });
-        setLastPosition({ x: newX, y: newY });
+        setPosition(constrainedPos);
+        setLastPosition(constrainedPos);
       }
     } else {
       // Regular scroll - pan the content
@@ -121,8 +161,11 @@ export const ZoomPanContainer = ({
       const newX = position.x - e.deltaX * panSpeed;
       const newY = position.y - e.deltaY * panSpeed;
 
-      setPosition({ x: newX, y: newY });
-      setLastPosition({ x: newX, y: newY });
+      // Constrain to boundaries
+      const constrainedPos = constrainPosition({ x: newX, y: newY }, scale);
+
+      setPosition(constrainedPos);
+      setLastPosition(constrainedPos);
     }
   };
 
@@ -140,10 +183,14 @@ export const ZoomPanContainer = ({
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
 
-    setPosition({
+    const newPos = {
       x: lastPosition.x + deltaX,
       y: lastPosition.y + deltaY,
-    });
+    };
+
+    // Constrain to boundaries
+    const constrainedPos = constrainPosition(newPos, scale);
+    setPosition(constrainedPos);
   };
 
   const handleMouseUp = () => {
@@ -205,10 +252,14 @@ export const ZoomPanContainer = ({
       const deltaX = e.touches[0].clientX - dragStart.x;
       const deltaY = e.touches[0].clientY - dragStart.y;
 
-      setPosition({
+      const newPos = {
         x: lastPosition.x + deltaX,
         y: lastPosition.y + deltaY,
-      });
+      };
+
+      // Constrain to boundaries
+      const constrainedPos = constrainPosition(newPos, scale);
+      setPosition(constrainedPos);
     } else if (e.touches.length === 2) {
       // Two touches - pinch zoom
       const currentDistance = getDistance(touchPointsRef.current);
@@ -234,8 +285,11 @@ export const ZoomPanContainer = ({
           const newX = centerX - (centerX - position.x) * scaleRatio;
           const newY = centerY - (centerY - position.y) * scaleRatio;
 
+          // Constrain to boundaries
+          const constrainedPos = constrainPosition({ x: newX, y: newY }, newScale);
+
           setScale(newScale);
-          setPosition({ x: newX, y: newY });
+          setPosition(constrainedPos);
         }
       }
     }
