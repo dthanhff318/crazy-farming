@@ -5,6 +5,7 @@ import { supabase } from './lib/supabase';
 import { queryClient } from './lib/queryClient';
 import { Login } from './pages/Login';
 import { Game } from './pages/Game';
+import { LoadingScreen } from './components/LoadingScreen';
 import type { User } from '@supabase/supabase-js';
 
 function App() {
@@ -29,14 +30,7 @@ function App() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🌾</div>
-          <p className="text-xl font-semibold text-farm-brown-800">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (

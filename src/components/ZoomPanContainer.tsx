@@ -51,6 +51,39 @@ export const ZoomPanContainer = ({
   const lastScaleRef = useRef(initialScale);
   const lastDistanceRef = useRef(0);
 
+  // Constrain position to content boundaries
+  const constrainPosition = (pos: Position, currentScale: number): Position => {
+    if (!containerRef.current) return pos;
+
+    const container = containerRef.current;
+    const containerRect = container.getBoundingClientRect();
+
+    // Calculate scaled content dimensions
+    const scaledWidth = contentWidth * currentScale;
+    const scaledHeight = contentHeight * currentScale;
+
+    // Calculate boundaries
+    // Max position is 0 (content aligned to top-left)
+    // Min position ensures content doesn't go beyond bottom-right
+    const maxX = 0;
+    const maxY = 0;
+    const minX = containerRect.width - scaledWidth;
+    const minY = containerRect.height - scaledHeight;
+
+    // If content is smaller than container, center it
+    const constrainedX =
+      scaledWidth < containerRect.width
+        ? (containerRect.width - scaledWidth) / 2
+        : Math.max(minX, Math.min(maxX, pos.x));
+
+    const constrainedY =
+      scaledHeight < containerRect.height
+        ? (containerRect.height - scaledHeight) / 2
+        : Math.max(minY, Math.min(maxY, pos.y));
+
+    return { x: constrainedX, y: constrainedY };
+  };
+
   // Center content on mount - focus on center of the map
   useEffect(() => {
     if (containerRef.current) {
@@ -98,39 +131,6 @@ export const ZoomPanContainer = ({
     };
   };
 
-  // Constrain position to content boundaries
-  const constrainPosition = (pos: Position, currentScale: number): Position => {
-    if (!containerRef.current) return pos;
-
-    const container = containerRef.current;
-    const containerRect = container.getBoundingClientRect();
-
-    // Calculate scaled content dimensions
-    const scaledWidth = contentWidth * currentScale;
-    const scaledHeight = contentHeight * currentScale;
-
-    // Calculate boundaries
-    // Max position is 0 (content aligned to top-left)
-    // Min position ensures content doesn't go beyond bottom-right
-    const maxX = 0;
-    const maxY = 0;
-    const minX = containerRect.width - scaledWidth;
-    const minY = containerRect.height - scaledHeight;
-
-    // If content is smaller than container, center it
-    const constrainedX =
-      scaledWidth < containerRect.width
-        ? (containerRect.width - scaledWidth) / 2
-        : Math.max(minX, Math.min(maxX, pos.x));
-
-    const constrainedY =
-      scaledHeight < containerRect.height
-        ? (containerRect.height - scaledHeight) / 2
-        : Math.max(minY, Math.min(maxY, pos.y));
-
-    return { x: constrainedX, y: constrainedY };
-  };
-
   // Handle wheel events (desktop/trackpad)
   const handleWheel = (e: WheelEvent) => {
     e.preventDefault();
@@ -158,7 +158,10 @@ export const ZoomPanContainer = ({
         const newY = mouseY - (mouseY - position.y) * scaleRatio;
 
         // Constrain to boundaries
-        const constrainedPos = constrainPosition({ x: newX, y: newY }, newScale);
+        const constrainedPos = constrainPosition(
+          { x: newX, y: newY },
+          newScale
+        );
 
         setScale(newScale);
         setPosition(constrainedPos);
@@ -295,7 +298,10 @@ export const ZoomPanContainer = ({
           const newY = centerY - (centerY - position.y) * scaleRatio;
 
           // Constrain to boundaries
-          const constrainedPos = constrainPosition({ x: newX, y: newY }, newScale);
+          const constrainedPos = constrainPosition(
+            { x: newX, y: newY },
+            newScale
+          );
 
           setScale(newScale);
           setPosition(constrainedPos);

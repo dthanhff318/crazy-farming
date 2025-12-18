@@ -3,6 +3,7 @@ import { ZoomPanContainer } from "../components/ZoomPanContainer";
 import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
 import { ShopModal } from "../components/ShopModal";
+import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "../hooks/useUser";
 import { supabase } from "../lib/supabase";
 import type { User } from "@supabase/supabase-js";
@@ -37,22 +38,12 @@ export const Game = ({ user }: GameProps) => {
       await updateUserName(farmerName);
     } catch (error) {
       console.error("Failed to create user:", error);
-      alert("Failed to create user. Please try again.");
     }
   };
 
   // Show loading while fetching user data
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🌾</div>
-          <p className="text-xl font-semibold text-farm-brown-800">
-            Loading...
-          </p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   return (
