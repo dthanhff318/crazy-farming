@@ -68,24 +68,41 @@ export const GameLayout = ({
           </div>
 
           {/* Right Side - Stats */}
-          <div className="flex items-center pointer-events-auto">
-            <span
-              className="text-lg font-bold w-fit text-white bg-black/30 pl-3 pr-5 h-fit leading-none translate-x-[10px]"
+          <div className="flex items-center justify-end pointer-events-auto relative">
+            <div
+              className="bg-black/40 w-fit h-full translate-x-[10px] flex items-center justify-end pl-[30px]"
               style={{
                 maskImage: "linear-gradient(90deg, #0000, #000 22%)",
                 WebkitMaskImage: "linear-gradient(90deg, #0000, #000 22%)",
                 zIndex: -1,
               }}
             >
-              {coins}
-            </span>
+              <span
+                className="text-xl font-bold w-fit text-white h-fit leading-5 text-right mr-5 tracking-widest"
+                style={{
+                  textShadow: `
+                  -2px -2px 0 #000  ,
+                  2px -2px 0 #000,
+                  -2px 2px 0 #000,
+                  2px 2px 0 #000,
+                  -3px 0 0 #000,
+                  3px 0 0 #000,
+                  0 -3px 0 #000,
+                  0 3px 0 #000
+                `,
+                  fontFamily: "Pixel",
+                }}
+              >
+                {coins}
+              </span>
+            </div>
             <CurrencyIcon size={26} />
           </div>
         </div>
       </div>
 
       {/* Navigation Bar - Right Side */}
-      <div className="fixed right-3 bottom-3 z-[90] flex flex-col gap-3 pointer-events-auto">
+      <div className="fixed right-3 bottom-3 z-90 flex flex-col gap-3 pointer-events-auto">
         <RoundButton onClick={() => {}}>
           <img
             src="/assets/buttons/setting-icon.png"
