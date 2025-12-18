@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { CurrencyIcon } from "../helpers/currency";
-import { PixelCard } from "./PixelCard";
 
 interface RoundButtonProps {
   children: ReactNode;
