@@ -62,16 +62,18 @@ export const Game = ({ user }: GameProps) => {
         initialScale={2.2}
         minScale={1}
         maxScale={3}
+        contentWidth={4116}
+        contentHeight={2940}
       >
         <div
-          className="w-full h-full flex items-center justify-center"
+          className="flex items-center justify-center"
           style={{
             backgroundImage: "url(/assets/objects/sea.png)",
             backgroundSize: "48px 48px",
             backgroundRepeat: "repeat",
             imageRendering: "pixelated",
-            minWidth: "100vw",
-            minHeight: "100vh",
+            width: "4116px",
+            height: "2940px",
           }}
         >
           <div className="flex justify-center items-center p-8">
