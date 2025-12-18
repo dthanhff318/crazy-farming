@@ -92,40 +92,40 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-farm-sky-100 to-farm-green-100 px-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-farm-sky-100 to-farm-green-100">
+      <div className="w-full h-full flex flex-col items-center justify-center px-6 py-8">
         {/* Logo/Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-farm-brown-800 mb-2">🌾 Crazy Farming</h1>
-          <p className="text-farm-brown-600">
+          <h1 className="text-5xl font-bold text-farm-brown-800 mb-3">🌾 Crazy Farming</h1>
+          <p className="text-lg text-farm-brown-600">
             {isSignUp ? 'Start your farming adventure!' : 'Welcome back, farmer!'}
           </p>
         </div>
 
         {/* Login/Signup Form */}
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-farm-green-300 shadow-xl p-8">
-          <h2 className="text-2xl font-bold text-farm-brown-800 mb-6 text-center">
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl border-2 border-farm-green-300 shadow-xl p-10 w-full max-w-lg">
+          <h2 className="text-3xl font-bold text-farm-brown-800 mb-8 text-center">
             {isSignUp ? 'Create Account' : 'Login'}
           </h2>
 
           <form onSubmit={isSignUp ? handleSignUp : handleLogin} className="space-y-6">
             {/* Error Message */}
             {error && (
-              <div className="bg-red-100 border-2 border-red-300 text-red-700 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-red-100 border-2 border-red-300 text-red-700 px-4 py-3 rounded-xl text-base">
                 {error}
               </div>
             )}
 
             {/* Success Message */}
             {message && (
-              <div className="bg-farm-green-100 border-2 border-farm-green-300 text-farm-green-800 px-4 py-3 rounded-xl text-sm">
+              <div className="bg-farm-green-100 border-2 border-farm-green-300 text-farm-green-800 px-4 py-3 rounded-xl text-base">
                 {message}
               </div>
             )}
 
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-farm-brown-800 mb-2">
+              <label htmlFor="email" className="block text-base font-semibold text-farm-brown-800 mb-2">
                 Email
               </label>
               <input
@@ -134,14 +134,14 @@ export const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
+                className="w-full px-4 py-4 text-base rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
                 placeholder="farmer@example.com"
               />
             </div>
 
             {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-farm-brown-800 mb-2">
+              <label htmlFor="password" className="block text-base font-semibold text-farm-brown-800 mb-2">
                 Password
               </label>
               <input
@@ -150,7 +150,7 @@ export const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-3 rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
+                className="w-full px-4 py-4 text-base rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
                 placeholder={isSignUp ? 'At least 6 characters' : 'Enter your password'}
               />
             </div>
@@ -158,7 +158,7 @@ export const Login = () => {
             {/* Confirm Password Input - Only for Sign Up */}
             {isSignUp && (
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-semibold text-farm-brown-800 mb-2">
+                <label htmlFor="confirmPassword" className="block text-base font-semibold text-farm-brown-800 mb-2">
                   Confirm Password
                 </label>
                 <input
@@ -167,7 +167,7 @@ export const Login = () => {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
+                  className="w-full px-4 py-4 text-base rounded-xl border-2 border-farm-brown-300 focus:border-farm-green-400 focus:outline-none transition-colors"
                   placeholder="Re-enter your password"
                 />
               </div>
@@ -187,11 +187,11 @@ export const Login = () => {
 
           {/* Toggle between Login/Signup */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-farm-brown-600">
+            <p className="text-base text-farm-brown-600">
               {isSignUp ? 'Already have an account?' : "Don't have an account?"}{' '}
               <button
                 onClick={toggleMode}
-                className="text-farm-green-600 hover:text-farm-green-700 font-semibold"
+                className="text-farm-green-600 hover:text-farm-green-700 font-semibold text-base"
               >
                 {isSignUp ? 'Login here' : 'Sign up here'}
               </button>
@@ -200,7 +200,7 @@ export const Login = () => {
         </div>
 
         {/* Footer */}
-        <p className="text-center mt-6 text-sm text-farm-brown-600">
+        <p className="text-center mt-6 text-base text-farm-brown-600">
           {isSignUp ? 'Join thousands of farmers today! 🚜' : 'Start your farming adventure today! 🚜'}
         </p>
       </div>

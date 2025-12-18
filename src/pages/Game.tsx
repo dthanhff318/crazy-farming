@@ -3,10 +3,12 @@ import { ZoomPanContainer } from "../components/ZoomPanContainer";
 import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
 import { ShopModal } from "../components/ShopModal";
+import { ProfileModal } from "../components/ProfileModal";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "../hooks/useUser";
 import { supabase } from "../lib/supabase";
 import type { User } from "@supabase/supabase-js";
+import MainIsland from "../components/MainIsland";
 
 interface GameProps {
   user: User;
@@ -14,6 +16,7 @@ interface GameProps {
 
 export const Game = ({ user }: GameProps) => {
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { userData, loading, updateUserName } = useUser(user);
 
   // Check if user needs onboarding (user not found in DB or name is null/empty)
@@ -49,13 +52,7 @@ export const Game = ({ user }: GameProps) => {
   return (
     <div className="w-full h-screen mx-auto relative overflow-hidden bg-gray-100 game-container">
       {/* Game Layout - Header + Navigation + Content */}
-      <ZoomPanContainer
-        initialScale={2.2}
-        minScale={1}
-        maxScale={3}
-        contentWidth={4116}
-        contentHeight={2940}
-      >
+      <ZoomPanContainer initialScale={0.8} minScale={0.5} maxScale={3}>
         <div
           className="flex items-center justify-center"
           style={{
@@ -67,19 +64,16 @@ export const Game = ({ user }: GameProps) => {
             height: "2940px",
           }}
         >
-          <div className="flex justify-center items-center p-8">
-            <img
-              src="/assets/objects/main-land.png"
-              alt="Farm Land"
-              className="pixelated"
-              style={{ imageRendering: "pixelated", maxWidth: "800px" }}
-            />
-          </div>
+          <MainIsland onMarketClick={() => setIsShopModalOpen(true)} />
         </div>
       </ZoomPanContainer>
 
       {/* UI Overlays - Positioned absolutely above the zoom/pan container */}
-      <GameLayout coins={userData?.coin || 0} level={userData?.level || 1} />
+      <GameLayout
+        coins={userData?.coin || 0}
+        level={userData?.level || 1}
+        onAvatarClick={() => setIsProfileModalOpen(true)}
+      />
 
       {needsOnboarding && (
         <OnboardingModal onComplete={handleOnboardingComplete} />
@@ -89,6 +83,13 @@ export const Game = ({ user }: GameProps) => {
       <ShopModal
         isOpen={isShopModalOpen}
         onClose={() => setIsShopModalOpen(false)}
+      />
+
+      {/* Profile Modal */}
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        userData={userData}
       />
     </div>
   );

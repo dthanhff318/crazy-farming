@@ -39,6 +39,7 @@ interface GameLayoutProps {
   level: number;
   gems?: number;
   avatarUrl?: string;
+  onAvatarClick?: () => void;
 }
 
 /**
@@ -48,6 +49,7 @@ interface GameLayoutProps {
 export const GameLayout = ({
   coins,
   avatarUrl = "/assets/avatar/default-avatar.png",
+  onAvatarClick,
 }: GameLayoutProps) => {
   return (
     <div className="relative w-full h-full">
@@ -61,8 +63,9 @@ export const GameLayout = ({
               <img
                 src={avatarUrl}
                 alt="Avatar"
-                className="w-20 h-20 rounded-full border-4 border-white shadow-xl"
+                className="w-20 h-20 rounded-full border-4 border-white shadow-xl cursor-pointer hover:scale-105 transition-transform"
                 style={{ imageRendering: "pixelated" }}
+                onClick={onAvatarClick}
               />
             </div>
           </div>
