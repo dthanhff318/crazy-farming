@@ -6,6 +6,15 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const coordinates = [
+  [-7, 8],
+  [-6, 8],
+  [-5, 8],
+  [-7, 7],
+  [-6, 7],
+  [-5, 7],
+];
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -23,13 +32,10 @@ Deno.serve(async (req) => {
     const { userId, name } = await req.json();
 
     if (!userId || !name) {
-      return new Response(
-        JSON.stringify({ error: "Missing userId or name" }),
-        {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 400,
-        }
-      );
+      return new Response(JSON.stringify({ error: "Missing userId or name" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
 
     // Check if user already exists
@@ -53,21 +59,35 @@ Deno.serve(async (req) => {
       if (error) throw error;
       user = data;
     } else {
-      // User doesn't exist, create new user
-      const { data, error } = await supabaseClient
-        .from("users")
-        .insert({
+      // User doesn't exist, create new user and related data
+
+      const mappingPlots = coordinates.map(([x, y], index) =>
+        supabaseClient.from("farm_plots").insert({
+          user_id: userId,
+          plot_number: index + 1,
+          position_x: x,
+          position_y: y,
+          is_unlocked: true,
+          unlocked_at: new Date().toISOString(),
+        })
+      );
+
+      const [userData, farmPlotsData] = await Promise.all([
+        supabaseClient.from("users").insert({
           id: userId,
           name,
           level: 1,
           exp: 0,
-          coin: 100,
-        })
-        .select()
-        .single();
+          coin: 0,
+        }),
+        ...mappingPlots,
+      ]);
 
-      if (error) throw error;
-      user = data;
+      if (userData.error || farmPlotsData.error) {
+        throw new Error("Failed to create user or farm plots");
+      }
+
+      user = userData.data;
     }
 
     return new Response(
