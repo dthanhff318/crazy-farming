@@ -41,7 +41,7 @@ interface TabButtonProps {
   children: ReactNode;
   tab: string;
   isFirst?: boolean;
-  icon?: ReactNode;
+  icon?: string;
 }
 
 /**
@@ -92,8 +92,8 @@ export const TabButton = ({
             borderTopRightRadius: "var(--radius-pixel)",
           }}
         >
-          {icon && <span className="text-base">{icon}</span>}
-          <span>{children}</span>
+          {icon && <img src={icon} className="w-6 h-6 object-contain" />}
+          <span className="text-2xl">{children}</span>
         </button>
       ) : (
         <button
@@ -106,8 +106,8 @@ export const TabButton = ({
             minWidth: "94px",
           }}
         >
-          {icon && <span className="text-base">{icon}</span>}
-          <span>{children}</span>
+          {icon && <img src={icon} className="w-6 h-6 object-contain" />}
+          <span className="text-2xl">{children}</span>
         </button>
       )}
     </div>

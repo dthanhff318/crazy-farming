@@ -1,18 +1,18 @@
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { queryClient } from '../lib/queryClient';
-import type { Database } from '../lib/database.types';
-import type { User } from '@supabase/supabase-js';
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { supabase } from "../lib/supabase";
+import { queryClient } from "../lib/queryClient";
+import type { Database } from "../lib/database.types";
+import type { User } from "@supabase/supabase-js";
 
-type UserData = Database['public']['Tables']['users']['Row'];
+type UserData = Database["public"]["Tables"]["users"]["Row"];
 
 const fetchUserData = async (userId: string): Promise<UserData> => {
-  const { data, error } = await supabase.functions.invoke('get-user-profile', {
+  const { data, error } = await supabase.functions.invoke("get-user-profile", {
     body: { userId },
   });
 
   if (error) {
-    throw new Error(error.message || 'Failed to fetch user data');
+    throw new Error(error.message || "Failed to fetch user data");
   }
 
   return data.data;
@@ -20,29 +20,32 @@ const fetchUserData = async (userId: string): Promise<UserData> => {
 
 export const useUser = (user: User | null) => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ['userData', user?.id],
+    queryKey: ["userData", user?.id],
     queryFn: () => fetchUserData(user!.id),
     enabled: !!user, // Only run query if user exists
   });
 
   const updateUserNameMutation = useMutation({
     mutationFn: async (name: string) => {
-      if (!user) throw new Error('No user');
+      if (!user) throw new Error("No user");
 
       // Use edge function instead of direct DB update
-      const { data, error } = await supabase.functions.invoke('create_new_user', {
-        body: {
-          userId: user.id,
-          name,
-        },
-      });
+      const { data, error } = await supabase.functions.invoke(
+        "create_new_user",
+        {
+          body: {
+            userId: user.id,
+            name,
+          },
+        }
+      );
 
       if (error) throw error;
       return data;
     },
     onSuccess: () => {
       // Invalidate and refetch user data
-      queryClient.invalidateQueries({ queryKey: ['userData', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ["userData", user?.id] });
     },
   });
 

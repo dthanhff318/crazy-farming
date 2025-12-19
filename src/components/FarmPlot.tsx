@@ -20,6 +20,18 @@ export const FarmPlot = ({ x, y }: FarmPlotProps) => {
         top: `calc(50% - 2.5px - ${y * gridSize}px)`,
         left: `calc(50% - 2.5px - ${x * gridSize}px)`,
       }}
-    ></div>
+    >
+      {
+        <img
+          src="/assets/objects/plot-seed.png"
+          alt="Crop"
+          style={{
+            imageRendering: "pixelated",
+            backgroundPosition: "bottom",
+          }}
+          className="object-cover absolute -top-9 w-full h-auto"
+        />
+      }
+    </div>
   );
 };

@@ -15,6 +15,13 @@ const coordinates = [
   [-5, 7],
 ];
 
+const CONFIG_NEW_USER = {
+  name: "",
+  level: 1,
+  exp: 0,
+  coin: 8,
+};
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
@@ -29,10 +36,10 @@ Deno.serve(async (req) => {
     );
 
     // Get request body
-    const { userId, name } = await req.json();
+    const { userId } = await req.json();
 
-    if (!userId || !name) {
-      return new Response(JSON.stringify({ error: "Missing userId or name" }), {
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Missing userId" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 400,
       });
@@ -45,50 +52,48 @@ Deno.serve(async (req) => {
       .eq("id", userId)
       .single();
 
-    let user;
-
     if (existingUser) {
-      // User exists, update the name
-      const { data, error } = await supabaseClient
-        .from("users")
-        .update({ name })
-        .eq("id", userId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      user = data;
-    } else {
-      // User doesn't exist, create new user and related data
-
-      const mappingPlots = coordinates.map(([x, y], index) =>
-        supabaseClient.from("farm_plots").insert({
-          user_id: userId,
-          plot_number: index + 1,
-          position_x: x,
-          position_y: y,
-          is_unlocked: true,
-          unlocked_at: new Date().toISOString(),
-        })
-      );
-
-      const [userData, farmPlotsData] = await Promise.all([
-        supabaseClient.from("users").insert({
-          id: userId,
-          name,
-          level: 1,
-          exp: 0,
-          coin: 0,
+      return new Response(
+        JSON.stringify({
+          success: true,
+          user: existingUser,
+          message: "User already exists",
         }),
-        ...mappingPlots,
-      ]);
-
-      if (userData.error || farmPlotsData.error) {
-        throw new Error("Failed to create user or farm plots");
-      }
-
-      user = userData.data;
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
+
+    // Create new user and farm plots
+    const mappingPlots = coordinates.map(([x, y], index) =>
+      supabaseClient.from("farm_plots").insert({
+        user_id: userId,
+        plot_number: index + 1,
+        position_x: x,
+        position_y: y,
+        is_unlocked: true,
+        unlocked_at: new Date().toISOString(),
+      })
+    );
+
+    const [userData] = await Promise.all([
+      supabaseClient
+        .from("users")
+        .insert({
+          id: userId,
+          ...CONFIG_NEW_USER,
+        })
+        .select()
+        .single(),
+      ...mappingPlots,
+    ]);
+
+    if (userData.error) {
+      throw new Error("Failed to create user or farm plots");
+    }
+
+    const user = userData.data;
 
     return new Response(
       JSON.stringify({

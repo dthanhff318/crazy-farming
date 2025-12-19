@@ -124,6 +124,7 @@ body {
   font-family: "m5x7", monospace;
   /* Prevent pull-to-refresh on mobile */
   overscroll-behavior: none;
+  color: var(--color-text-primary);
 }
 
 #root {

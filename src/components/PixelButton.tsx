@@ -46,7 +46,7 @@ export const PixelButton = ({
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${className} flex items-center justify-center text-3xl`}
       disabled={disabled}
       onMouseDown={() => !disabled && setIsPressed(true)}
       onMouseUp={() => setIsPressed(false)}
@@ -56,22 +56,21 @@ export const PixelButton = ({
       {...props}
       style={{
         borderStyle: "solid",
-        borderWidth: "8px 8px 10px 8px",
+        borderWidth: "4px 6px 10px 6px",
         borderImageSource: `url(${currentImage})`,
         borderImageSlice: "2 2 3 2 fill",
         borderImageRepeat: "stretch",
         imageRendering: "pixelated",
         minWidth: "120px",
-        minHeight: "48px",
         transform: isPressed ? "scale(0.98)" : "scale(1)",
         transition: "transform 0.05s ease-out",
         borderRadius: "13.125px",
+        height: "48px",
         ...props.style,
+        color: "var(--color-text-primary)",
       }}
     >
-      <span className="relative z-10 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
-        {children}
-      </span>
+      <span className="relative z-10 ">{children}</span>
     </button>
   );
 };

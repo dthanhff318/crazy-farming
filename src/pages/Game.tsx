@@ -25,8 +25,8 @@ export const Game = ({ user }: GameProps) => {
 
   const handleOnboardingComplete = async (farmerName: string) => {
     try {
-      // Call edge function to create/update user
-      const { error } = await supabase.functions.invoke("create_new_user", {
+      // Call edge function to update user name
+      const { error } = await supabase.functions.invoke("update_user_data", {
         body: {
           userId: user.id,
           name: farmerName,
@@ -34,13 +34,13 @@ export const Game = ({ user }: GameProps) => {
       });
 
       if (error) {
-        throw new Error(error.message || "Failed to create user");
+        throw new Error(error.message || "Failed to update user");
       }
 
       // Refresh user data by calling updateUserName (which refetches from DB)
       await updateUserName(farmerName);
     } catch (error) {
-      console.error("Failed to create user:", error);
+      console.error("Failed to update user:", error);
     }
   };
 
@@ -64,7 +64,10 @@ export const Game = ({ user }: GameProps) => {
             height: "2940px",
           }}
         >
-          <MainIsland onMarketClick={() => setIsShopModalOpen(true)} user={user} />
+          <MainIsland
+            onMarketClick={() => setIsShopModalOpen(true)}
+            user={user}
+          />
         </div>
       </ZoomPanContainer>
 
@@ -83,6 +86,7 @@ export const Game = ({ user }: GameProps) => {
       <ShopModal
         isOpen={isShopModalOpen}
         onClose={() => setIsShopModalOpen(false)}
+        user={user}
       />
 
       {/* Profile Modal */}
