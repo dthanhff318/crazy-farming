@@ -87,23 +87,24 @@ Deno.serve(async (req) => {
       throw new Error("Not enough coins");
     }
 
-    // Start transaction: Deduct coins and add to inventory
-    const { error: updateCoinError } = await supabaseClient
-      .from("users")
-      .update({ coin: userData.coin - totalCost })
-      .eq("id", userId);
+    // Run in parallel: Check inventory and update coins
+    const [inventoryResult] = await Promise.all([
+      supabaseClient
+        .from("user_inventory")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("item_type", itemType)
+        .eq("item_code", itemCode)
+        .single(),
+      supabaseClient
+        .from("users")
+        .update({ coin: userData.coin - totalCost })
+        .eq("id", userId),
+    ]);
 
-    if (updateCoinError) throw updateCoinError;
+    const existingItem = inventoryResult.data;
 
-    // Check if item already exists in inventory
-    const { data: existingItem } = await supabaseClient
-      .from("user_inventory")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("item_type", itemType)
-      .eq("item_code", itemCode)
-      .single();
-
+    // Update or insert inventory
     if (existingItem) {
       // Update quantity
       const { error: updateError } = await supabaseClient
@@ -139,12 +140,9 @@ Deno.serve(async (req) => {
       }
     );
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 500,
-      }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500,
+    });
   }
 });

@@ -12,6 +12,7 @@ import { CurrencyIcon } from "../helpers/currency";
 import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
 import type { User } from "@supabase/supabase-js";
+import { formatDecimalNumber } from "../helpers/formatNumber";
 
 type SeedType = Database["public"]["Tables"]["seed_types"]["Row"];
 type AnimalType = Database["public"]["Tables"]["animal_types"]["Row"];
@@ -45,27 +46,45 @@ export const ShopModal = ({ isOpen, onClose, user }: ShopModalProps) => {
   };
 
   const handlePurchase = async (quantity: number) => {
-    if (!selectedItem || !user) return;
+    if (!selectedItem || !user || !userData) return;
 
-    try {
-      const { error } = await supabase.functions.invoke("purchase_item", {
+    const itemPrice = getResourceData(selectedItem)?.base_price || 0;
+    const totalCost = itemPrice * quantity;
+
+    // Optimistic update: Update coins immediately (user sees this)
+    queryClient.setQueryData(["userData", user.id], (old: any) => ({
+      ...old,
+      coin: formatDecimalNumber(Number(old.coin) - totalCost),
+    }));
+
+    // Call API in background (fire-and-forget)
+    supabase.functions
+      .invoke("purchase_item", {
         body: {
           userId: user.id,
           itemType: selectedItem.itemType,
           itemCode: selectedItem.itemCode,
           quantity,
         },
+      })
+      .then(({ error }) => {
+        if (error) {
+          // Rollback coins on error
+          queryClient.invalidateQueries({ queryKey: ["userData", user.id] });
+          alert(error.message || "Failed to purchase item");
+        } else {
+          // Success: Refresh inventory to show new items
+          queryClient.invalidateQueries({
+            queryKey: ["userInventory", user.id],
+          });
+        }
+      })
+      .catch((error) => {
+        // Rollback on error
+        queryClient.invalidateQueries({ queryKey: ["userData", user.id] });
+        console.error("Purchase error:", error);
+        alert("Failed to purchase item");
       });
-
-      if (error) throw new Error(error.message || "Failed to purchase item");
-
-      // Invalidate queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ["userData", user.id] });
-      queryClient.invalidateQueries({ queryKey: ["userInventory", user.id] });
-    } catch (error) {
-      console.error("Purchase error:", error);
-      alert(error instanceof Error ? error.message : "Failed to purchase item");
-    }
   };
 
   const getResourceData = (item: {
