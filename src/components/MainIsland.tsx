@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { FarmPlot } from "./FarmPlot";
+import { useFarm } from "../hooks/useFarm";
+import type { User } from "@supabase/supabase-js";
 
 interface MainIslandProps {
   onMarketClick?: () => void;
+  user: User;
 }
 
-const MainIsland = ({ onMarketClick }: MainIslandProps) => {
+const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
   const gridSize = 42; // Size of each grid cell
   const islandWidth = 1512;
   const islandHeight = 1512; // Assuming square island, adjust if needed
   const [showGrid] = useState(true);
+
+  // Get farm plots from database
+  const { farmState, loading } = useFarm(user?.id);
 
   const gridStyle = {
     backgroundImage: `
@@ -46,14 +52,14 @@ const MainIsland = ({ onMarketClick }: MainIslandProps) => {
         onClick={onMarketClick}
       />
 
-      {/* Farm Plots - Using grid coordinates (x, y) */}
-      <FarmPlot x={1} y={1} />
-      <FarmPlot x={2} y={2} />
-      <FarmPlot x={2} y={3} />
-      <FarmPlot x={3} y={3} />
-      <FarmPlot x={4} y={4} />
-      <FarmPlot x={-8} y={8} />
-      <FarmPlot x={-7} y={8} />
+      {/* Farm Plots - Dynamically rendered from database */}
+      {!loading && farmState?.plots.map((plot) => (
+        <FarmPlot
+          key={plot.id}
+          x={plot.positionX ?? 0}
+          y={plot.positionY ?? 0}
+        />
+      ))}
     </div>
   );
 };

@@ -64,7 +64,7 @@ export const Game = ({ user }: GameProps) => {
             height: "2940px",
           }}
         >
-          <MainIsland onMarketClick={() => setIsShopModalOpen(true)} />
+          <MainIsland onMarketClick={() => setIsShopModalOpen(true)} user={user} />
         </div>
       </ZoomPanContainer>
 
