@@ -70,6 +70,7 @@ const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
             y={plot.position_y ?? 0}
             plot={plot}
             onPlantSeed={handlePlantSeed}
+            userId={user.id}
           />
         ))}
     </div>

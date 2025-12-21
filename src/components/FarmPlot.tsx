@@ -1,21 +1,34 @@
+import { useMemo } from "react";
 import { useSelectedItemStore } from "../stores/selectedItemStore";
+import { useUserInventory } from "../hooks/useUserInventory";
 import type { FarmPlot as FarmPlotType } from "../hooks/useFarm";
-import { getCropsAssetUrl } from "../helpers/normalizePath";
+import { getPlantGrowthStageUrl } from "../helpers/normalizePath";
+import { useNow } from "../hooks/useNow";
 
 interface FarmPlotProps {
   x: number; // Grid x position
   y: number; // Grid y position
   plot: FarmPlotType;
   onPlantSeed: (plotId: string, seedCode: string) => Promise<void>;
+  userId: string;
 }
 
 /**
  * FarmPlot - Individual farm plot component
  * Shows locked/unlocked state, crop status, and actions
  */
-export const FarmPlot = ({ x, y, plot, onPlantSeed }: FarmPlotProps) => {
+export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => {
   const gridSize = 42;
   const { selectedItem, clearSelectedItem } = useSelectedItemStore();
+  const { inventory } = useUserInventory(userId);
+
+  // Use live time updates if there's a crop planted
+  // Auto-stop updates when crop is ready
+  const now = useNow({
+    live: !!plot.user_crops,
+    autoEndAt: plot.user_crops ? new Date(plot.user_crops.ready_at).getTime() : undefined,
+    intervalMs: 1000,
+  });
 
   const handlePlotClick = async () => {
     // Check if plot is unlocked
@@ -36,15 +49,35 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed }: FarmPlotProps) => {
       return;
     }
 
+    // Find current inventory item for the selected seed
+    const inventoryItem = inventory.find(
+      (item) => item.item_code === selectedItem.itemData.code && item.item_type === "seed"
+    );
+
     try {
       // Plant the seed
       await onPlantSeed(plot.id, selectedItem.itemData.code);
-      // Clear selection after successful planting
-      clearSelectedItem();
+
+      // Only clear selection if this was the last item (quantity will become 0)
+      if (inventoryItem && inventoryItem.quantity <= 1) {
+        clearSelectedItem();
+      }
     } catch (error) {
       console.error("Failed to plant seed:", error);
     }
   };
+
+  // Calculate plant image URL with real-time stage updates
+  const plantImageUrl = useMemo(() => {
+    if (!plot.user_crops) return "";
+
+    // Re-calculate when 'now' changes (triggers on every interval)
+    return getPlantGrowthStageUrl(
+      plot.user_crops.seed_code,
+      plot.user_crops.planted_at,
+      plot.user_crops.ready_at
+    );
+  }, [plot.user_crops, now]);
 
   console.log(plot.user_crops);
   return (
@@ -63,7 +96,7 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed }: FarmPlotProps) => {
     >
       {plot.user_crops && (
         <img
-          src={getCropsAssetUrl(plot.user_crops.seed_code, "plant")}
+          src={plantImageUrl}
           alt="Crop"
           style={{
             imageRendering: "pixelated",

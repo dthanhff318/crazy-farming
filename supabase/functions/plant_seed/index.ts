@@ -72,11 +72,9 @@ serve(async (req) => {
     if (existingCropError) throw existingCropError;
     if (existingCrop) throw new Error("Plot already has a crop");
 
-    // 6. Calculate ready_at time
+    // 6. Calculate ready_at time (growth_time is in minutes)
     const now = new Date();
-    const readyAt = new Date(
-      now.getTime() + seedType.growth_time * 60 * 60 * 1000
-    );
+    const readyAt = new Date(now.getTime() + seedType.growth_time * 60 * 1000);
 
     // 7. Deduct coins from user
     const newCoin = user.coin - seedType.base_price;
