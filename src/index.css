@@ -103,6 +103,8 @@
   /* Primary text color */
   --color-text-primary: #3e2731;
 
+  --color-gray-background: #c0cbdd;
+
   /* Border radius for pixel art elements */
   --radius-pixel: 14.125px;
 }

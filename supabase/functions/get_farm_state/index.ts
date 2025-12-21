@@ -9,24 +9,23 @@ const corsHeaders = {
 
 interface FarmPlot {
   id: string;
-  plotNumber: number;
-  positionX: number | null;
-  positionY: number | null;
-  isUnlocked: boolean;
-  unlockedAt: string | null;
+  plot_number: number;
+  position_x: number | null;
+  position_y: number | null;
+  is_unlocked: boolean;
+  unlocked_at: string | null;
   crop: CropInfo | null;
 }
 
 interface CropInfo {
   id: string;
-  seedCode: string;
-  seedName: string;
-  seedIcon: string | null;
-  plantedAt: string;
-  readyAt: string;
+  seed_code: string;
+  seed_name: string;
+  planted_at: string;
+  ready_at: string;
   status: string;
   progress: number;
-  remainingTime: number;
+  remaining_time: number;
 }
 
 serve(async (req) => {
@@ -65,7 +64,6 @@ serve(async (req) => {
           status,
           seed_types (
             name,
-            icon,
             growth_time
           )
         )
@@ -78,81 +76,9 @@ serve(async (req) => {
       throw plotsError;
     }
 
-    const now = new Date();
-
-    // Process plots and calculate crop progress
-    const processedPlots: FarmPlot[] = plots.map((plot: any) => {
-      let crop: CropInfo | null = null;
-
-      if (plot.user_crops && plot.user_crops.length > 0) {
-        const cropData = plot.user_crops[0];
-        const plantedAt = new Date(cropData.planted_at);
-        const readyAt = new Date(cropData.ready_at);
-
-        // Calculate progress
-        const totalTime = readyAt.getTime() - plantedAt.getTime();
-        const elapsed = now.getTime() - plantedAt.getTime();
-        const progress = Math.min(Math.round((elapsed / totalTime) * 100), 100);
-
-        // Calculate remaining time in seconds
-        const remainingTime = Math.max(
-          Math.round((readyAt.getTime() - now.getTime()) / 1000),
-          0
-        );
-
-        // Auto-update status if ready
-        let status = cropData.status;
-        if (status === "growing" && now >= readyAt) {
-          status = "ready";
-
-          // Update status in database
-          supabaseClient
-            .from("user_crops")
-            .update({ status: "ready" })
-            .eq("id", cropData.id)
-            .then();
-        }
-
-        crop = {
-          id: cropData.id,
-          seedCode: cropData.seed_code,
-          seedName: cropData.seed_types.name,
-          seedIcon: cropData.seed_types.icon,
-          plantedAt: cropData.planted_at,
-          readyAt: cropData.ready_at,
-          status,
-          progress,
-          remainingTime,
-        };
-      }
-
-      return {
-        id: plot.id,
-        plotNumber: plot.plot_number,
-        positionX: plot.position_x,
-        positionY: plot.position_y,
-        isUnlocked: plot.is_unlocked,
-        unlockedAt: plot.unlocked_at,
-        crop,
-      };
-    });
-
-    // Calculate stats
-    const stats = {
-      totalPlots: processedPlots.length,
-      unlockedPlots: processedPlots.filter((p) => p.isUnlocked).length,
-      activeCrops: processedPlots.filter(
-        (p) => p.crop && p.crop.status === "growing"
-      ).length,
-      readyCrops: processedPlots.filter(
-        (p) => p.crop && p.crop.status === "ready"
-      ).length,
-    };
-
     return new Response(
       JSON.stringify({
-        plots: processedPlots,
-        stats,
+        plots: plots,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

@@ -79,7 +79,7 @@ export const TabButton = ({
       `}
           style={{
             height: "44px",
-            minWidth: "94px",
+            width: "fit-content",
             borderImageSource: `url(${getBackgroundImage()})`,
             borderStyle: "solid",
             borderWidth: "12px",

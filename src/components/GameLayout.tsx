@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import { CurrencyIcon } from "../helpers/currency";
+import { PixelCard } from "./PixelCard";
+import { useSelectedItemStore } from "../stores/selectedItemStore";
+import { getCropsAssetUrl } from "../helpers/normalizePath";
 
 interface RoundButtonProps {
   children: ReactNode;
@@ -40,6 +43,7 @@ interface GameLayoutProps {
   gems?: number;
   avatarUrl?: string;
   onAvatarClick?: () => void;
+  onInventoryClick?: () => void;
 }
 
 /**
@@ -50,7 +54,16 @@ export const GameLayout = ({
   coins,
   avatarUrl = "/assets/avatar/default-avatar.png",
   onAvatarClick,
+  onInventoryClick,
 }: GameLayoutProps) => {
+  const selectedItem = useSelectedItemStore((state) => state.selectedItem);
+
+  // Get icon for selected item
+  const getSelectedItemIcon = () => {
+    if (!selectedItem) return "/assets/objects/bag.png";
+    return getCropsAssetUrl(selectedItem.itemData.code);
+  };
+
   return (
     <div className="relative w-full h-full">
       {/* Header - Top */}
@@ -104,7 +117,19 @@ export const GameLayout = ({
         </div>
       </div>
 
-      {/* Navigation Bar - Right Side */}
+      <PixelCard
+        className="w-12 h-12 flex items-center justify-center fixed right-3 top-50 translate-y-[-50%] cursor-pointer hover:scale-105 transition-transform z-[100] pointer-events-auto"
+        onClick={onInventoryClick}
+      >
+        <img
+          src={getSelectedItemIcon()}
+          alt="Inventory"
+          className="w-12 h-12 object-contain"
+          style={{ imageRendering: "pixelated" }}
+        />
+      </PixelCard>
+
+      {/* Bottom buttons */}
       <div className="fixed right-3 bottom-3 z-90 flex flex-col gap-3 pointer-events-auto">
         <RoundButton onClick={() => {}}>
           <img

@@ -6,6 +6,7 @@ interface ItemBoxProps {
   isSelected: boolean;
   onClick: () => void;
   className?: string;
+  quantity?: number;
 }
 
 /**
@@ -17,6 +18,7 @@ export const ItemBox = ({
   isSelected,
   onClick,
   className = "",
+  quantity,
 }: ItemBoxProps) => {
   return (
     <PixelCard
@@ -29,6 +31,15 @@ export const ItemBox = ({
         className="w-full h-full object-contain"
         style={{ imageRendering: "pixelated" }}
       />
+      {quantity !== undefined && quantity > 0 && (
+        <PixelCard
+          backgroundColor="var(--color-gray-background)"
+          className="absolute top-[-24px] right-[-24px] bg-white text-black px-1 rounded-tl h-7 w-[40px] flex items-center justify-center text-2xl z-1"
+          borderImage="/assets/border/gray-border.png"
+        >
+          <span className="text-2xl w-fit">{quantity}</span>
+        </PixelCard>
+      )}
       {isSelected && (
         <>
           <img

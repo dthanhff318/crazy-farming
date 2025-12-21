@@ -3,6 +3,7 @@ import { ZoomPanContainer } from "../components/ZoomPanContainer";
 import { GameLayout } from "../components/GameLayout";
 import { OnboardingModal } from "../components/OnboardingModal";
 import { ShopModal } from "../components/ShopModal";
+import { InventoryModal } from "../components/InventoryModal";
 import { ProfileModal } from "../components/ProfileModal";
 import { LoadingScreen } from "../components/LoadingScreen";
 import { useUser } from "../hooks/useUser";
@@ -16,6 +17,7 @@ interface GameProps {
 
 export const Game = ({ user }: GameProps) => {
   const [isShopModalOpen, setIsShopModalOpen] = useState(false);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const { userData, loading, updateUserName } = useUser(user);
 
@@ -76,6 +78,7 @@ export const Game = ({ user }: GameProps) => {
         coins={userData?.coin || 0}
         level={userData?.level || 1}
         onAvatarClick={() => setIsProfileModalOpen(true)}
+        onInventoryClick={() => setIsInventoryModalOpen(true)}
       />
 
       {needsOnboarding && (
@@ -86,6 +89,13 @@ export const Game = ({ user }: GameProps) => {
       <ShopModal
         isOpen={isShopModalOpen}
         onClose={() => setIsShopModalOpen(false)}
+        user={user}
+      />
+
+      {/* Inventory Modal */}
+      <InventoryModal
+        isOpen={isInventoryModalOpen}
+        onClose={() => setIsInventoryModalOpen(false)}
         user={user}
       />
 

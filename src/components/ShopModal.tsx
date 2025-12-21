@@ -13,6 +13,7 @@ import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
 import type { User } from "@supabase/supabase-js";
 import { formatDecimalNumber } from "../helpers/formatNumber";
+import { getCropsAssetUrl } from "../helpers/normalizePath";
 
 type SeedType = Database["public"]["Tables"]["seed_types"]["Row"];
 type AnimalType = Database["public"]["Tables"]["animal_types"]["Row"];
@@ -135,8 +136,13 @@ export const ShopModal = ({ isOpen, onClose, user }: ShopModalProps) => {
               <div className="flex flex-col items-start gap-1">
                 <div className="flex items-center justify-start gap-3">
                   <img
-                    src={getResourceData(selectedItem)?.icon || ""}
+                    src={
+                      selectedItem.itemType === "seed"
+                        ? getCropsAssetUrl(selectedItem.itemCode)
+                        : getResourceData(selectedItem)?.icon || ""
+                    }
                     className="w-6 h-6 object-contain"
+                    style={{ imageRendering: "pixelated" }}
                   />
                   <span className="text-3xl">
                     {getResourceData(selectedItem)?.name || ""}
@@ -214,7 +220,7 @@ export const ShopModal = ({ isOpen, onClose, user }: ShopModalProps) => {
                     return (
                       <ItemBox
                         key={seed.id}
-                        icon={seed.icon || ""}
+                        icon={getCropsAssetUrl(seed.code)}
                         name={seed.name}
                         isSelected={seed.code === selectedItem?.itemCode}
                         onClick={() => handleSelectClick("seed", seed.code)}

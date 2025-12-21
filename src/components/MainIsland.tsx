@@ -15,7 +15,16 @@ const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
   const [showGrid] = useState(true);
 
   // Get farm plots from database
-  const { farmState, loading } = useFarm(user?.id);
+  const {
+    farmState,
+    loading,
+    plantSeed: plantSeedMutation,
+  } = useFarm(user?.id);
+
+  // Wrapper function to match the expected signature
+  const handlePlantSeed = async (plotId: string, seedCode: string) => {
+    await plantSeedMutation({ plotId, seedCode });
+  };
 
   const gridStyle = {
     backgroundImage: `
@@ -53,13 +62,16 @@ const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
       />
 
       {/* Farm Plots - Dynamically rendered from database */}
-      {!loading && farmState?.plots.map((plot) => (
-        <FarmPlot
-          key={plot.id}
-          x={plot.positionX ?? 0}
-          y={plot.positionY ?? 0}
-        />
-      ))}
+      {!loading &&
+        farmState?.plots.map((plot) => (
+          <FarmPlot
+            key={plot.id}
+            x={plot.position_x ?? 0}
+            y={plot.position_y ?? 0}
+            plot={plot}
+            onPlantSeed={handlePlantSeed}
+          />
+        ))}
     </div>
   );
 };

@@ -40,9 +40,7 @@ Deno.serve(async (req) => {
     if (!userData) throw new Error("User not found");
 
     // Get item data based on type
-    let itemData: any;
     let itemPrice: number;
-    let unlockLevel: number;
 
     if (itemType === "seed") {
       const { data, error } = await supabaseClient
@@ -54,9 +52,7 @@ Deno.serve(async (req) => {
       if (error) throw error;
       if (!data) throw new Error("Seed not found");
 
-      itemData = data;
       itemPrice = data.base_price;
-      unlockLevel = data.unlock_level;
     } else if (itemType === "animal") {
       const { data, error } = await supabaseClient
         .from("animal_types")
@@ -67,16 +63,9 @@ Deno.serve(async (req) => {
       if (error) throw error;
       if (!data) throw new Error("Animal not found");
 
-      itemData = data;
       itemPrice = data.base_price;
-      unlockLevel = data.unlock_level;
     } else {
       throw new Error("Invalid item type");
-    }
-
-    // Check level requirement
-    if (userData.level < unlockLevel) {
-      throw new Error(`Requires level ${unlockLevel}`);
     }
 
     // Calculate total cost

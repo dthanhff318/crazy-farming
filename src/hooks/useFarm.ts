@@ -4,24 +4,23 @@ import { queryClient } from "../lib/queryClient";
 
 export interface CropInfo {
   id: string;
-  seedCode: string;
-  seedName: string;
-  seedIcon: string | null;
-  plantedAt: string;
-  readyAt: string;
+  seed_code: string;
+  seed_name: string;
+  planted_at: string;
+  ready_at: string;
   status: string;
   progress: number;
-  remainingTime: number;
+  remaining_time: number;
 }
 
 export interface FarmPlot {
   id: string;
-  plotNumber: number;
-  positionX: number | null;
-  positionY: number | null;
-  isUnlocked: boolean;
-  unlockedAt: string | null;
-  crop: CropInfo | null;
+  plot_number: number;
+  position_x: number | null;
+  position_y: number | null;
+  is_unlocked: boolean;
+  unlocked_at: string | null;
+  user_crops: CropInfo | null;
 }
 
 export interface FarmState {
