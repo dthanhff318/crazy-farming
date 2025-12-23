@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSeedTypes } from "../hooks/useSeedTypes";
 import { useAnimalTypes } from "../hooks/useAnimalTypes";
-import { useUserInventory } from "../hooks/useUserInventory";
+import { useGameMachineContext } from "../contexts/GameMachineContext";
 import { supabase } from "../lib/supabase";
 import { queryClient } from "../lib/queryClient";
 import { PixelButton } from "./PixelButton";
@@ -35,11 +35,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
     loading: animalsLoading,
     error: animalsError,
   } = useAnimalTypes();
-  const {
-    inventory,
-    loading: inventoryLoading,
-    error: inventoryError,
-  } = useUserInventory(userData?.id);
+  const { inventory } = useGameMachineContext();
 
   const userLevel = userData?.level || 1;
 
@@ -275,15 +271,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
         {/* Inventory Category */}
         {activeCategory === "inventory" && (
           <div>
-            {inventoryLoading && (
-              <p className="text-center" style={{ color: "var(--color-text-primary)", opacity: 0.7 }}>
-                Loading inventory...
-              </p>
-            )}
-            {inventoryError && (
-              <p className="text-red-600 text-center">{inventoryError}</p>
-            )}
-            {!inventoryLoading && !inventoryError && inventory.length === 0 && (
+            {inventory.length === 0 && (
               <div className="bg-white rounded-2xl border-4 border-farm-brown-400 p-8 text-center">
                 <p className="text-lg" style={{ color: "var(--color-text-primary)" }}>
                   Your inventory is empty
@@ -293,7 +281,7 @@ export const MarketplaceSection = ({ userData }: MarketplaceSectionProps) => {
                 </p>
               </div>
             )}
-            {!inventoryLoading && !inventoryError && inventory.length > 0 && (
+            {inventory.length > 0 && (
               <div className="flex flex-col gap-3">
                 {inventory.map((item) => {
                   const isSelling =

@@ -3,7 +3,7 @@ import { Tabs, TabList, TabButton, TabPanel } from "./Tabs";
 import { PixelCard } from "./PixelCard";
 import { ItemBox } from "./ItemBox";
 import { useSeedTypes } from "../hooks/useSeedTypes";
-import { useUserInventory } from "../hooks/useUserInventory";
+import { useGameMachineContext } from "../contexts/GameMachineContext";
 import { useSelectedItemStore } from "../stores/selectedItemStore";
 import { getCropsAssetUrl } from "../helpers/normalizePath";
 import type { Database } from "../lib/database.types";
@@ -21,18 +21,13 @@ interface InventoryModalProps {
 export const InventoryModal = ({
   isOpen,
   onClose,
-  user,
 }: InventoryModalProps) => {
   const {
     seedTypes,
     loading: seedsLoading,
     error: seedsError,
   } = useSeedTypes();
-  const {
-    inventory,
-    loading: inventoryLoading,
-    error: inventoryError,
-  } = useUserInventory(user?.id);
+  const { inventory } = useGameMachineContext();
 
   const selectedItem = useSelectedItemStore((state) => state.selectedItem);
   const setSelectedItem = useSelectedItemStore(
@@ -116,7 +111,7 @@ export const InventoryModal = ({
           {/* Seeds Tab */}
           <TabPanel tab="seeds">
             <PixelCard className="p-2 max-h-[400px] overflow-y-auto">
-              {(seedsLoading || inventoryLoading) && (
+              {seedsLoading && (
                 <p
                   className="text-center py-8"
                   style={{ color: "var(--color-text-primary)", opacity: 0.7 }}
@@ -124,12 +119,12 @@ export const InventoryModal = ({
                   Loading seeds...
                 </p>
               )}
-              {(seedsError || inventoryError) && (
+              {seedsError && (
                 <p className="text-red-600 text-center py-8">
-                  {seedsError || inventoryError}
+                  {seedsError}
                 </p>
               )}
-              {!seedsLoading && !inventoryLoading && (
+              {!seedsLoading && (
                 <>
                   {seedInventory.length === 0 ? (
                     <p

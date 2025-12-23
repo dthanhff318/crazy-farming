@@ -4,7 +4,7 @@ import { PixelCard } from "./PixelCard";
 import { ItemBox } from "./ItemBox";
 import { useSeedTypes } from "../hooks/useSeedTypes";
 import { useAnimalTypes } from "../hooks/useAnimalTypes";
-import { useUser } from "../hooks/useUser";
+import { useGameMachineContext } from "../contexts/GameMachineContext";
 import type { Database } from "../lib/database.types";
 import { useState } from "react";
 import { PixelButton } from "./PixelButton";
@@ -35,7 +35,7 @@ export const ShopModal = ({ isOpen, onClose, user }: ShopModalProps) => {
     loading: animalsLoading,
     error: animalsError,
   } = useAnimalTypes();
-  const { userData } = useUser(user);
+  const { user: userData } = useGameMachineContext();
 
   const [selectedItem, setSelectedItem] = useState<{
     itemType: "seed" | "animal";

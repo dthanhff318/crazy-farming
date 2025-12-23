@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useSelectedItemStore } from "../stores/selectedItemStore";
-import { useUserInventory } from "../hooks/useUserInventory";
+import { useGameMachineContext } from "../contexts/GameMachineContext";
 import type { FarmPlot as FarmPlotType } from "../hooks/useFarm";
 import { getPlantGrowthStageUrl } from "../helpers/normalizePath";
 import { useNow } from "../hooks/useNow";
@@ -9,7 +9,7 @@ interface FarmPlotProps {
   x: number; // Grid x position
   y: number; // Grid y position
   plot: FarmPlotType;
-  onPlantSeed: (plotId: string, seedCode: string) => Promise<void>;
+  onPlantSeed: (plotId: string, seedCode: string) => void;
   userId: string;
 }
 
@@ -17,16 +17,23 @@ interface FarmPlotProps {
  * FarmPlot - Individual farm plot component
  * Shows locked/unlocked state, crop status, and actions
  */
-export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => {
+export const FarmPlot = ({
+  x,
+  y,
+  plot,
+  onPlantSeed,
+}: FarmPlotProps) => {
   const gridSize = 42;
   const { selectedItem, clearSelectedItem } = useSelectedItemStore();
-  const { inventory } = useUserInventory(userId);
+  const { inventory } = useGameMachineContext();
 
   // Use live time updates if there's a crop planted
   // Auto-stop updates when crop is ready
-  const now = useNow({
+  useNow({
     live: !!plot.user_crops,
-    autoEndAt: plot.user_crops ? new Date(plot.user_crops.ready_at).getTime() : undefined,
+    autoEndAt: plot.user_crops
+      ? new Date(plot.user_crops.ready_at).getTime()
+      : undefined,
     intervalMs: 1000,
   });
 
@@ -51,7 +58,9 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => 
 
     // Find current inventory item for the selected seed
     const inventoryItem = inventory.find(
-      (item) => item.item_code === selectedItem.itemData.code && item.item_type === "seed"
+      (item) =>
+        item.item_code === selectedItem.itemData.code &&
+        item.item_type === "seed"
     );
 
     try {
@@ -77,9 +86,8 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => 
       plot.user_crops.planted_at,
       plot.user_crops.ready_at
     );
-  }, [plot.user_crops, now]);
+  }, [plot.user_crops]);
 
-  console.log(plot.user_crops);
   return (
     <div
       className="w-12 h-12 flex absolute cursor-pointer"
@@ -89,8 +97,6 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => 
         imageRendering: "pixelated",
         top: `calc(50% - 2.5px - ${y * gridSize}px)`,
         left: `calc(50% - 2.5px - ${x * gridSize}px)`,
-        // opacity: plot.is_unlocked ? 1 : 0.5,
-        // zIndex: -y + 10,
       }}
       onClick={handlePlotClick}
     >
@@ -101,7 +107,6 @@ export const FarmPlot = ({ x, y, plot, onPlantSeed, userId }: FarmPlotProps) => 
           style={{
             imageRendering: "pixelated",
             backgroundPosition: "bottom",
-            // zIndex: -y + 10,
           }}
           className="object-cover absolute -top-9 w-full h-auto"
         />

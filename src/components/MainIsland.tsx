@@ -1,30 +1,19 @@
 import { useState } from "react";
 import { FarmPlot } from "./FarmPlot";
-import { useFarm } from "../hooks/useFarm";
-import type { User } from "@supabase/supabase-js";
+import { useGameMachineContext } from "../contexts/GameMachineContext";
 
 interface MainIslandProps {
   onMarketClick?: () => void;
-  user: User;
 }
 
-const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
+const MainIsland = ({ onMarketClick }: MainIslandProps) => {
   const gridSize = 42; // Size of each grid cell
   const islandWidth = 1512;
   const islandHeight = 1512; // Assuming square island, adjust if needed
   const [showGrid] = useState(true);
 
-  // Get farm plots from database
-  const {
-    farmState,
-    loading,
-    plantSeed: plantSeedMutation,
-  } = useFarm(user?.id);
-
-  // Wrapper function to match the expected signature
-  const handlePlantSeed = async (plotId: string, seedCode: string) => {
-    await plantSeedMutation({ plotId, seedCode });
-  };
+  // Get farm data and actions from game machine
+  const { farm, plantSeed } = useGameMachineContext();
 
   const gridStyle = {
     backgroundImage: `
@@ -61,18 +50,17 @@ const MainIsland = ({ onMarketClick, user }: MainIslandProps) => {
         onClick={onMarketClick}
       />
 
-      {/* Farm Plots - Dynamically rendered from database */}
-      {!loading &&
-        farmState?.plots.map((plot) => (
-          <FarmPlot
-            key={plot.id}
-            x={plot.position_x ?? 0}
-            y={plot.position_y ?? 0}
-            plot={plot}
-            onPlantSeed={handlePlantSeed}
-            userId={user.id}
-          />
-        ))}
+      {/* Farm Plots - Dynamically rendered from game machine */}
+      {farm?.plots.map((plot) => (
+        <FarmPlot
+          key={plot.id}
+          x={plot.position_x ?? 0}
+          y={plot.position_y ?? 0}
+          plot={plot}
+          onPlantSeed={plantSeed}
+          userId=""
+        />
+      ))}
     </div>
   );
 };
